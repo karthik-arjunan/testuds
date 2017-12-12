@@ -1,0 +1,31 @@
+Source: udsactor
+Section: admin
+Priority: optional
+Maintainer: Adolfo Gómez García <agomez@virtualcable.es>
+Build-Depends: debhelper (>= 7), po-debconf
+Standards-Version: 3.9.2
+Homepage: http://www.virtualcable.es
+
+Package: udsactor
+Section: admin
+Priority: optional
+Architecture: all
+Depends: policykit-1(>=0.100), python-requests (>=0.8.2), python-qt4 (>=4.9), python-six(>=1.1), python-prctl(>=1.1.1), python (>=2.7), libxss1, ${misc:Depends}
+Description: Actor for Universal Desktop Services (UDS) Broker
+ This package provides the required components to allow this machine to work on an environment managed by UDS Broker.
+
+Package: udsactor-xrdp
+Section: x11
+Priority: optional
+Architecture: all
+Depends: xrdp (>= 0.5.0), udsactor (>= ${binary:Version}), libpam-modules-bin (>=1.0), ${misc:Depends}
+Description: UDS Actor component for xrdp
+ This package provides connection between uds actor and xrdp
+
+Package: udsactor-nx
+Section: x11
+Priority: optional
+Architecture: all
+Depends: nxnode (>= 3.5.0), udsactor (>= ${binary:Version}), ${misc:Depends}
+Description: UDS Actor component for nx
+ This package provides connection between uds actor and nx 

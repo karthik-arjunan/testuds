@@ -1,0 +1,1062 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Abdel Baaddi <abaaddi@virtualcable.es>, 2016-2017
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenUDS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-09 09:19+0200\n"
+"PO-Revision-Date: 2017-10-04 11:09+0000\n"
+"Last-Translator: Adolfo Gómez <dkmaster@dkmon.com>\n"
+"Language-Team: Arabic (http://www.transifex.com/openuds/openuds/language/"
+"ar/)\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: static/tmp_js/api-tools.js:322
+msgid "Sunday"
+msgstr "الأحد"
+
+#: static/tmp_js/api-tools.js:322 static/tmp_js/gui-d-calendar.js:35
+msgid "Monday"
+msgstr "الاثنين"
+
+#: static/tmp_js/api-tools.js:322 static/tmp_js/gui-d-calendar.js:35
+msgid "Tuesday"
+msgstr "الثلاثاء"
+
+#: static/tmp_js/api-tools.js:322 static/tmp_js/gui-d-calendar.js:35
+msgid "Wednesday"
+msgstr "الأربعاء"
+
+#: static/tmp_js/api-tools.js:322 static/tmp_js/gui-d-calendar.js:35
+msgid "Thursday"
+msgstr "الخميس"
+
+#: static/tmp_js/api-tools.js:322 static/tmp_js/gui-d-calendar.js:35
+msgid "Friday"
+msgstr "الجمعة"
+
+#: static/tmp_js/api-tools.js:322 static/tmp_js/gui-d-calendar.js:35
+msgid "Saturday"
+msgstr "السبت"
+
+#: static/tmp_js/api-tools.js:324
+msgid "January"
+msgstr "كانون الثاني/يناير"
+
+#: static/tmp_js/api-tools.js:324
+msgid "February"
+msgstr "شباط/فبراير"
+
+#: static/tmp_js/api-tools.js:324
+msgid "March"
+msgstr "آذار/مارس"
+
+#: static/tmp_js/api-tools.js:324
+msgid "April"
+msgstr "نيسان/أبريل"
+
+#: static/tmp_js/api-tools.js:324
+msgid "May"
+msgstr "أيار/مايو"
+
+#: static/tmp_js/api-tools.js:324
+msgid "June"
+msgstr "حزيران/يونيو"
+
+#: static/tmp_js/api-tools.js:324
+msgid "July"
+msgstr "تموز/يوليوز"
+
+#: static/tmp_js/api-tools.js:324
+msgid "August"
+msgstr "آب/أغسطس"
+
+#: static/tmp_js/api-tools.js:324
+msgid "September"
+msgstr "أيلول/سبتمبر"
+
+#: static/tmp_js/api-tools.js:324
+msgid "October"
+msgstr "تشرين الأول/أكتوبر"
+
+#: static/tmp_js/api-tools.js:324
+msgid "November"
+msgstr "تشرين الثاني/نوفمبر"
+
+#: static/tmp_js/api-tools.js:324
+msgid "December"
+msgstr "كانون الأول/ديسمبر"
+
+#: static/tmp_js/gui-d-authenticators.js:10 static/tmp_js/gui-d-services.js:31
+msgid "Test"
+msgstr "اختبار"
+
+#: static/tmp_js/gui-d-authenticators.js:42
+msgid "Search error"
+msgstr "خطأ في البحث"
+
+#: static/tmp_js/gui-d-authenticators.js:51 static/tmp_js/gui-form.js:318
+msgid "Accept"
+msgstr "قبول"
+
+#: static/tmp_js/gui-d-authenticators.js:151
+#: static/tmp_js/gui-d-connectivity.js:43 static/tmp_js/gui-d-osmanagers.js:39
+#: static/tmp_js/gui-d-services.js:108 static/tmp_js/gui-d-services.js:150
+#: static/tmp_js/gui-d-servicespools.js:220
+msgid "Error accessing data"
+msgstr "خطأ في الوصول إلى البيانات"
+
+#: static/tmp_js/gui-d-authenticators.js:168
+#: static/tmp_js/gui-d-authenticators.js:395
+#: static/tmp_js/gui-d-services.js:130
+msgid "Information"
+msgstr "معلومات"
+
+#: static/tmp_js/gui-d-authenticators.js:196
+msgid "Group information"
+msgstr "معلومات المجموعة"
+
+#: static/tmp_js/gui-d-authenticators.js:312
+msgid "Edit group"
+msgstr "تحرير مجموعة"
+
+#: static/tmp_js/gui-d-authenticators.js:334
+#: static/tmp_js/gui-d-authenticators.js:377
+msgid "Group saved"
+msgstr "المجموعة المحفوظة"
+
+#: static/tmp_js/gui-d-authenticators.js:355
+msgid "New meta group"
+msgstr "مجموعة التعريف الجديدة"
+
+#: static/tmp_js/gui-d-authenticators.js:357
+msgid "New group"
+msgstr "مجموعة جديدة"
+
+#: static/tmp_js/gui-d-authenticators.js:369
+msgid "Search groups"
+msgstr "مجموعات البحث"
+
+#: static/tmp_js/gui-d-authenticators.js:369
+#: static/tmp_js/gui-permissions.js:36 static/tmp_js/gui-permissions.js:85
+msgid "Group"
+msgstr "المجموعة"
+
+#: static/tmp_js/gui-d-authenticators.js:369
+msgid "Groups found"
+msgstr "العثور على مجموعات"
+
+#: static/tmp_js/gui-d-authenticators.js:378
+msgid "Group saving error"
+msgstr "خطاء في حفظ المجموعة"
+
+#: static/tmp_js/gui-d-authenticators.js:390
+msgid "Delete group"
+msgstr "حذف مجموعة"
+
+#: static/tmp_js/gui-d-authenticators.js:390
+msgid "Group deletion error"
+msgstr "خطأ في حذف المجموعة"
+
+#: static/tmp_js/gui-d-authenticators.js:419
+msgid "User information"
+msgstr "معلومات المستخدم"
+
+#: static/tmp_js/gui-d-authenticators.js:568
+msgid "Edit user"
+msgstr "تحرير المستخدم"
+
+#: static/tmp_js/gui-d-authenticators.js:600
+#: static/tmp_js/gui-d-authenticators.js:631
+msgid "User saved"
+msgstr "حفظ المستخدم"
+
+#: static/tmp_js/gui-d-authenticators.js:601
+#: static/tmp_js/gui-d-authenticators.js:632
+msgid "User saving error"
+msgstr "خطأ في حفظ المستخدم"
+
+#: static/tmp_js/gui-d-authenticators.js:612
+msgid "New user"
+msgstr "مستخدم جديد"
+
+#: static/tmp_js/gui-d-authenticators.js:623
+msgid "Search users"
+msgstr "البحث عن المستخدمين"
+
+#: static/tmp_js/gui-d-authenticators.js:623
+#: static/tmp_js/gui-permissions.js:33 static/tmp_js/gui-permissions.js:82
+msgid "User"
+msgstr "المستخدم"
+
+#: static/tmp_js/gui-d-authenticators.js:623
+msgid "Users found"
+msgstr "العثور على مستخدمين"
+
+#: static/tmp_js/gui-d-authenticators.js:637
+msgid "Delete user"
+msgstr "حذف المستخدم"
+
+#: static/tmp_js/gui-d-authenticators.js:637
+msgid "User deletion error"
+msgstr "خطأ في حذف المستخدم"
+
+#: static/tmp_js/gui-d-authenticators.js:648
+msgid "New authenticator"
+msgstr "مصادق جديد"
+
+#: static/tmp_js/gui-d-authenticators.js:648
+msgid "Authenticator creation error"
+msgstr "خطأ في إنشاء المصادق"
+
+#: static/tmp_js/gui-d-authenticators.js:649
+msgid "Edit authenticator"
+msgstr "تحرير المصادق"
+
+#: static/tmp_js/gui-d-authenticators.js:649
+msgid "Authenticator saving error"
+msgstr "خطأ في حفظ المصادق"
+
+#: static/tmp_js/gui-d-authenticators.js:650
+msgid "Delete authenticator"
+msgstr "حذف المصادق"
+
+#: static/tmp_js/gui-d-authenticators.js:650
+msgid "Authenticator deletion error"
+msgstr "خطأ في حذف المصادق"
+
+#: static/tmp_js/gui-d-calendar.js:23
+msgid "day"
+msgstr "يوم"
+
+#: static/tmp_js/gui-d-calendar.js:23
+msgid "days"
+msgstr "أيام"
+
+#: static/tmp_js/gui-d-calendar.js:23
+msgid "Daily"
+msgstr "اليومية"
+
+#: static/tmp_js/gui-d-calendar.js:24
+msgid "week"
+msgstr "أسبوع"
+
+#: static/tmp_js/gui-d-calendar.js:24
+msgid "weeks"
+msgstr "أسابيع"
+
+#: static/tmp_js/gui-d-calendar.js:24
+msgid "Weekly"
+msgstr "أسبوعيا"
+
+#: static/tmp_js/gui-d-calendar.js:25
+msgid "month"
+msgstr "شهر"
+
+#: static/tmp_js/gui-d-calendar.js:25
+msgid "months"
+msgstr "أشهر"
+
+#: static/tmp_js/gui-d-calendar.js:25
+msgid "Monthly"
+msgstr "شهريا"
+
+#: static/tmp_js/gui-d-calendar.js:26
+msgid "year"
+msgstr "سنة"
+
+#: static/tmp_js/gui-d-calendar.js:26
+msgid "years"
+msgstr "سنوات"
+
+#: static/tmp_js/gui-d-calendar.js:26
+msgid "Yearly"
+msgstr "سنوياً"
+
+#: static/tmp_js/gui-d-calendar.js:27
+msgid "Weekdays"
+msgstr "أيام الأسبوع"
+
+#: static/tmp_js/gui-d-calendar.js:30
+msgid "Minutes"
+msgstr "دقائق"
+
+#: static/tmp_js/gui-d-calendar.js:31
+msgid "Hours"
+msgstr "ساعات"
+
+#: static/tmp_js/gui-d-calendar.js:32
+msgid "Days"
+msgstr "أيام"
+
+#: static/tmp_js/gui-d-calendar.js:33
+msgid "Weeks"
+msgstr "أسابيع"
+
+#: static/tmp_js/gui-d-calendar.js:35
+msgid "Sun"
+msgstr "الشمس"
+
+#: static/tmp_js/gui-d-calendar.js:51
+msgid "(no days)"
+msgstr "(لا يوم)"
+
+#: static/tmp_js/gui-d-calendar.js:151
+msgid "This rule will be valid every "
+msgstr "وستكون هذه القاعدة صالحة كل "
+
+#: static/tmp_js/gui-d-calendar.js:153
+msgid "of any week"
+msgstr "في أي أسبوع"
+
+#: static/tmp_js/gui-d-calendar.js:161
+msgid "from"
+msgstr "من"
+
+#: static/tmp_js/gui-d-calendar.js:163
+msgid "onwards"
+msgstr "فصاعدا"
+
+#: static/tmp_js/gui-d-calendar.js:165
+msgid "until "
+msgstr "حتى "
+
+#: static/tmp_js/gui-d-calendar.js:167
+msgid "starting at"
+msgstr "ابتداء من الساعة"
+
+#: static/tmp_js/gui-d-calendar.js:170
+msgid "and will remain valid for "
+msgstr "وسوف تظل سارية "
+
+#: static/tmp_js/gui-d-calendar.js:172
+msgid "with no duration"
+msgstr "بدون مدة"
+
+#: static/tmp_js/gui-d-calendar.js:208
+msgid "New rule"
+msgstr "القاعدة الجديدة"
+
+#: static/tmp_js/gui-d-calendar.js:208
+msgid "Edit rule"
+msgstr "تحرير قاعدة"
+
+#: static/tmp_js/gui-d-calendar.js:209
+msgid "Save"
+msgstr "حفظ"
+
+#: static/tmp_js/gui-d-calendar.js:300
+msgid "Error creating rule"
+msgstr "خطأ في إنشاء القاعدة"
+
+#: static/tmp_js/gui-d-calendar.js:303
+msgid "Error saving rule"
+msgstr "حدث خطأ أثناء حفظ القاعدة"
+
+#: static/tmp_js/gui-d-calendar.js:349
+msgid "Delete rule"
+msgstr "حذف قاعدة"
+
+#: static/tmp_js/gui-d-calendar.js:349
+msgid "Rule deletion error"
+msgstr "خطأ في حذف القاعدة"
+
+#: static/tmp_js/gui-d-calendar.js:356
+msgid "New calendar"
+msgstr "تقويم جديد"
+
+#: static/tmp_js/gui-d-calendar.js:356
+msgid "Calendar creation error"
+msgstr "خطأ في إنشاء التقويم"
+
+#: static/tmp_js/gui-d-calendar.js:357
+msgid "Edit calendar"
+msgstr "تحرير التقويم"
+
+#: static/tmp_js/gui-d-calendar.js:357
+msgid "Calendar saving error"
+msgstr "خطأ في حفظ التقويم"
+
+#: static/tmp_js/gui-d-calendar.js:358
+msgid "Delete calendar"
+msgstr "حذف التقويم"
+
+#: static/tmp_js/gui-d-calendar.js:358
+msgid "Calendar deletion error"
+msgstr "خطأ في حذف التقويم"
+
+#: static/tmp_js/gui-d-config.js:56
+msgid "Configuration saved"
+msgstr "حفظ التكوين"
+
+#: static/tmp_js/gui-d-config.js:60
+msgid "No changes has been made"
+msgstr "لم تحدث أي تغييرات"
+
+#: static/tmp_js/gui-d-connectivity.js:63
+msgid "New transport"
+msgstr "نقل جديد"
+
+#: static/tmp_js/gui-d-connectivity.js:63
+msgid "Transport creation error"
+msgstr "خطأ في إنشاء النقل"
+
+#: static/tmp_js/gui-d-connectivity.js:64
+msgid "Edit transport"
+msgstr "تحرير النقل"
+
+#: static/tmp_js/gui-d-connectivity.js:64
+msgid "Transport saving error"
+msgstr "خطأ في حفظ النقل"
+
+#: static/tmp_js/gui-d-connectivity.js:65
+msgid "Delete transport"
+msgstr "حذف النقل"
+
+#: static/tmp_js/gui-d-connectivity.js:65
+msgid "Transport deletion error"
+msgstr "خطأ في حذف النقل"
+
+#: static/tmp_js/gui-d-connectivity.js:72
+msgid "New network"
+msgstr "شبكة جديدة"
+
+#: static/tmp_js/gui-d-connectivity.js:72
+msgid "Network creation error"
+msgstr "خطأ في إنشاء شبكة"
+
+#: static/tmp_js/gui-d-connectivity.js:73
+msgid "Edit network"
+msgstr "تحرير الشبكة"
+
+#: static/tmp_js/gui-d-connectivity.js:73
+msgid "Network saving error"
+msgstr "خطأ في حفظ الشبكة"
+
+#: static/tmp_js/gui-d-connectivity.js:74
+msgid "Delete network"
+msgstr "حذف الشبكة"
+
+#: static/tmp_js/gui-d-connectivity.js:74
+msgid "Network deletion error"
+msgstr "خطأ في حذف الشبكة"
+
+#: static/tmp_js/gui-d-dashboard.js:40
+msgid "Staff member"
+msgstr "موظف"
+
+#: static/tmp_js/gui-d-gallery.js:17
+msgid "New image"
+msgstr "صورة جديدة"
+
+#: static/tmp_js/gui-d-gallery.js:17
+msgid "Edit image"
+msgstr "تحرير صورة"
+
+#: static/tmp_js/gui-d-gallery.js:18
+msgid "Upload"
+msgstr "تحميل"
+
+#: static/tmp_js/gui-d-gallery.js:26
+msgid "You must select an image"
+msgstr "يجب تحديد صورة"
+
+#: static/tmp_js/gui-d-gallery.js:34
+msgid "Image is too big (max. upload size is 256Kb)"
+msgstr "الصورة كبيرة جداً (بحد أقصى لحجم التحميل هو 256 كيلو بايت)"
+
+#: static/tmp_js/gui-d-gallery.js:80
+msgid "Delete Image"
+msgstr "حذف الصورة"
+
+#: static/tmp_js/gui-d-gallery.js:80
+msgid "Image deletion error"
+msgstr "خطأ في حذف الصورة"
+
+#: static/tmp_js/gui-d-osmanagers.js:42
+msgid "New OSManager"
+msgstr "مدير نظام تشغيل جديد"
+
+#: static/tmp_js/gui-d-osmanagers.js:42
+msgid "OSManager creation error"
+msgstr "خطأ في إنشاء مدير نظام التشغيل"
+
+#: static/tmp_js/gui-d-osmanagers.js:43
+msgid "Edit OSManager"
+msgstr "تحرير مدير نظام تشغيل"
+
+#: static/tmp_js/gui-d-osmanagers.js:43
+msgid "OSManager saving error"
+msgstr "خطأ في حفظ مدير نظام التشغيل"
+
+#: static/tmp_js/gui-d-osmanagers.js:44
+msgid "Delete OSManager"
+msgstr "حذف مدير نظام التشغيل"
+
+#: static/tmp_js/gui-d-osmanagers.js:44
+msgid "OSManager deletion error"
+msgstr "خطأ في حذف مدير نظام التشغيل"
+
+#: static/tmp_js/gui-d-reports.js:21 static/tmp_js/gui-d-reports.js:38
+msgid "Generate report"
+msgstr "إنشاء تقرير"
+
+#: static/tmp_js/gui-d-reports.js:59
+msgid "Error creating report"
+msgstr "حدث خطأ أثناء إنشاء التقرير"
+
+#: static/tmp_js/gui-d-reports.js:62
+msgid "Error obtaining report description"
+msgstr "خطأ في الحصول على وصف التقرير"
+
+#: static/tmp_js/gui-d-services.js:85
+msgid "In Maintenance"
+msgstr "في وضع  الصيانة"
+
+#: static/tmp_js/gui-d-services.js:87
+msgid "Active"
+msgstr "نشيط"
+
+#: static/tmp_js/gui-d-services.js:147
+msgid "Service information"
+msgstr "معلومات الخدمة"
+
+#: static/tmp_js/gui-d-services.js:205
+msgid "Edit service"
+msgstr "تحرير خدمة"
+
+#: static/tmp_js/gui-d-services.js:205
+msgid "Service creation error"
+msgstr "خطأ في إنشاء خدمة"
+
+#: static/tmp_js/gui-d-services.js:206
+msgid "New service"
+msgstr "خدمة جديدة"
+
+#: static/tmp_js/gui-d-services.js:206
+msgid "Service saving error"
+msgstr "خطأ في حفظ الخدمة"
+
+#: static/tmp_js/gui-d-services.js:207
+msgid "Delete service"
+msgstr "حذف الخدمة"
+
+#: static/tmp_js/gui-d-services.js:207
+msgid "Service deletion error"
+msgstr "خطأ في حذف الخدمة"
+
+#: static/tmp_js/gui-d-services.js:235
+msgid "Delete user service"
+msgstr "حذف خدمة المستخدم"
+
+#: static/tmp_js/gui-d-services.js:235
+msgid "User service deletion error"
+msgstr "خطأ في حذف خدمة المستخدم"
+
+#: static/tmp_js/gui-d-services.js:246 static/tmp_js/gui-d-services.js:269
+msgid "Maintenance"
+msgstr "صيانة"
+
+#: static/tmp_js/gui-d-services.js:255
+msgid "Maintenance Mode"
+msgstr "وضع الصيانة"
+
+#: static/tmp_js/gui-d-services.js:255
+msgid "Enter Maintenance Mode?"
+msgstr "هل تريد دخول وضع الصيانة ؟"
+
+#: static/tmp_js/gui-d-services.js:255
+msgid "Exit Maintenance Mode?"
+msgstr "هل تريد الخروج من وضع الصيانة؟"
+
+#: static/tmp_js/gui-d-services.js:274
+msgid "Enter maintenance Mode"
+msgstr "دخول وضع الصيانة"
+
+#: static/tmp_js/gui-d-services.js:277
+msgid "Exit Maintenance Mode"
+msgstr "إنهاء وضع الصيانة"
+
+#: static/tmp_js/gui-d-services.js:285
+msgid "New services provider"
+msgstr "موفر خدمات جديد"
+
+#: static/tmp_js/gui-d-services.js:285
+msgid "Services provider creation error"
+msgstr "خطأ في إنشاء موفر الخدمات"
+
+#: static/tmp_js/gui-d-services.js:286
+msgid "Edit services provider"
+msgstr "تحرير موفر الخدمات"
+
+#: static/tmp_js/gui-d-services.js:286
+msgid "Services Provider saving error"
+msgstr "خطأ في  حفظ موفر الخدمات  "
+
+#: static/tmp_js/gui-d-services.js:287
+msgid "Delete services provider"
+msgstr "حذف موفر الخدمات"
+
+#: static/tmp_js/gui-d-services.js:287
+msgid "Services Provider deletion error"
+msgstr "خطأ في حذف موفر الخدمات"
+
+#: static/tmp_js/gui-d-servicespools-actions.js:54
+msgid "Launch Now"
+msgstr "شغل الآن"
+
+#: static/tmp_js/gui-d-servicespools-actions.js:62
+msgid "Execute action"
+msgstr "تنفيذ الإجراء"
+
+#: static/tmp_js/gui-d-servicespools-actions.js:62
+msgid "Launch action execution right now?"
+msgstr "هل تريد الشروع في تنفيذ الإجراء الآن؟"
+
+#: static/tmp_js/gui-d-servicespools-actions.js:108
+msgid "Beginning"
+msgstr "بدء"
+
+#: static/tmp_js/gui-d-servicespools-actions.js:108
+msgid "Ending"
+msgstr "إنهاء"
+
+#: static/tmp_js/gui-d-servicespools-actions.js:117
+msgid "Add scheduled action"
+msgstr "إضافة الإجراء المجدول"
+
+#: static/tmp_js/gui-d-servicespools-actions.js:179
+#: static/tmp_js/gui-d-servicespools-calendars.js:95
+msgid "Edit access calendar"
+msgstr "تحرير الوصول إلى التقويم"
+
+#: static/tmp_js/gui-d-servicespools-actions.js:216
+#: static/tmp_js/gui-d-servicespools-calendars.js:122
+msgid "Remove access calendar"
+msgstr "إزالة الوصول إلى التقويم"
+
+#: static/tmp_js/gui-d-servicespools-actions.js:216
+#: static/tmp_js/gui-d-servicespools-calendars.js:122
+msgid "Access calendar removal error"
+msgstr "خطأ في إزالة الوصول إلى التقويم  "
+
+#: static/tmp_js/gui-d-servicespools-calendars.js:44
+msgid "Add access calendar"
+msgstr "إضافة تقويم"
+
+#: static/tmp_js/gui-d-servicespools-calendars.js:73
+msgid "Default fallback access"
+msgstr "الوصول  إلى البديل الافتراضي"
+
+#: static/tmp_js/gui-d-servicespools-publications.js:17
+#: static/tmp_js/gui-d-servicespools-publications.js:41
+msgid "Cancel"
+msgstr "إلغاء الأمر"
+
+#: static/tmp_js/gui-d-servicespools-publications.js:22
+#: static/tmp_js/gui-d-servicespools-publications.js:56
+#: static/tmp_js/gui-d-servicespools-publications.js:57
+msgid "Publish"
+msgstr "نشر"
+
+#: static/tmp_js/gui-d-servicespools-publications.js:22
+msgid "Cancel publication?"
+msgstr "إلغاء المنشور؟"
+
+#: static/tmp_js/gui-d-servicespools-publications.js:39
+msgid "Force Cancel"
+msgstr "إلغاء بالقوة"
+
+#: static/tmp_js/gui-d-servicespools-publications.js:67
+msgid "Failed creating publication"
+msgstr "فشل في إنشاء المنشور"
+
+#: static/tmp_js/gui-d-servicespools-transports.js:29
+msgid "Add transport"
+msgstr "إضافة النقل"
+
+#: static/tmp_js/gui-d-servicespools-transports.js:36
+msgid "You must provide a transport"
+msgstr "يجب إضافة النقل"
+
+#: static/tmp_js/gui-d-servicespools-transports.js:50
+msgid "Remove transport"
+msgstr "إزالة النقل"
+
+#: static/tmp_js/gui-d-servicespools-transports.js:50
+msgid "Transport removal error"
+msgstr "خطأ في إزالة النقل"
+
+#: static/tmp_js/gui-d-servicespools.js:153
+#: static/tmp_js/gui-d-servicespools.js:361
+msgid "Yes"
+msgstr "نعم"
+
+#: static/tmp_js/gui-d-servicespools.js:155
+#: static/tmp_js/gui-d-servicespools.js:363
+msgid "No"
+msgstr "لا"
+
+#: static/tmp_js/gui-d-servicespools.js:215
+msgid "error"
+msgstr "خطأ"
+
+#: static/tmp_js/gui-d-servicespools.js:264
+msgid "Remove Cache element"
+msgstr "إزالة عنصر من ذاكرة التخزين المؤقت"
+
+#: static/tmp_js/gui-d-servicespools.js:264
+#: static/tmp_js/gui-d-servicespools.js:382
+msgid "Deletion error"
+msgstr "خطأ في الحذف"
+
+#: static/tmp_js/gui-d-servicespools.js:286
+msgid "Add group"
+msgstr "إضافة مجموعة"
+
+#: static/tmp_js/gui-d-servicespools.js:310
+msgid "You must provide authenticator and group"
+msgstr "يجب إضافة المجموعة والمصادق"
+
+#: static/tmp_js/gui-d-servicespools.js:329
+msgid "Remove group"
+msgstr "إزالة مجموعة"
+
+#: static/tmp_js/gui-d-servicespools.js:329
+msgid "Group removal error"
+msgstr "خطأ في إزالة المجموعة"
+
+#: static/tmp_js/gui-d-servicespools.js:382
+msgid "Remove Assigned service"
+msgstr "إزالة خدمة مخصصة "
+
+#: static/tmp_js/gui-d-servicespools.js:430
+msgid "Restrained"
+msgstr "مقيد"
+
+#: static/tmp_js/gui-d-servicespools.js:439
+msgid "New service pool"
+msgstr "تجمع خدمات جديد "
+
+#: static/tmp_js/gui-d-servicespools.js:439
+msgid "creation error"
+msgstr "خطأ في الإنشاء "
+
+#: static/tmp_js/gui-d-servicespools.js:449
+msgid "Publish on creation"
+msgstr "أنشر مباشرة بعد الإنشاء "
+
+#: static/tmp_js/gui-d-servicespools.js:450
+msgid "If selected, will initiate the publication inmediatly after creation"
+msgstr "في حالة ألإختيار سيتم الشروع في النشر مباشرة بعد الإنشاء "
+
+#: static/tmp_js/gui-d-servicespools.js:462 static/tmp_js/gui.js:50
+msgid "Edit"
+msgstr "تحرير"
+
+#: static/tmp_js/gui-d-servicespools.js:462
+msgid "saving error"
+msgstr "خطأ في الحفظ"
+
+#: static/tmp_js/gui-d-servicespools.js:465 static/tmp_js/gui-methods.js:141
+#: static/tmp_js/gui.js:54
+msgid "Delete"
+msgstr "حذف"
+
+#: static/tmp_js/gui-d-servicespools.js:465
+msgid "deletion error"
+msgstr "خطأ في الحذف"
+
+#: static/tmp_js/gui-d-servicespoolsgroup.js:21
+msgid "New Services Pool Group"
+msgstr "مجموعة جديدة لتجمع الخدمات "
+
+#: static/tmp_js/gui-d-servicespoolsgroup.js:21
+msgid "Services Pool Group creation error"
+msgstr "خطاء في إنشاء مجموعة تجمع الخدمات"
+
+#: static/tmp_js/gui-d-servicespoolsgroup.js:22
+msgid "Edit Services Pool Group"
+msgstr "تعديل مجموعة تجمع الخدمات"
+
+#: static/tmp_js/gui-d-servicespoolsgroup.js:22
+msgid "Services Pool Group saving error"
+msgstr "خطاء في حفظ مجموعة تجمع الخدمات"
+
+#: static/tmp_js/gui-d-servicespoolsgroup.js:23
+msgid "Delete Services Pool Group"
+msgstr "حذف خدمات 'مجموعة تجمع الخدمات'"
+
+#: static/tmp_js/gui-d-servicespoolsgroup.js:23
+msgid "Services Pool Group removal error"
+msgstr "خطاء في حذف مجموعة تجمع الخدمات"
+
+#: static/tmp_js/gui-definition.js:12
+msgid "Cache"
+msgstr "ذاكرة التخزين المؤقت"
+
+#: static/tmp_js/gui-definition.js:12
+msgid "Cache has been flushed"
+msgstr "لقد تم إفراغ ذاكرة التخزين المؤقت"
+
+#: static/tmp_js/gui-element.js:255
+msgid "Refresh operation failed"
+msgstr "فشلت عملية  التحديث"
+
+#: static/tmp_js/gui-element.js:656
+msgid "Date"
+msgstr "تاريخ"
+
+#: static/tmp_js/gui-element.js:664
+msgid "level"
+msgstr "مستوى"
+
+#: static/tmp_js/gui-element.js:671
+msgid "source"
+msgstr "المصدر"
+
+#: static/tmp_js/gui-element.js:677
+msgid "message"
+msgstr "رسالة"
+
+#: static/tmp_js/gui-element.js:682
+msgid "Logs"
+msgstr "سجلات"
+
+#: static/tmp_js/gui-form.js:95
+msgid "Main"
+msgstr "الرئيسية"
+
+#: static/tmp_js/gui-form.js:301
+msgid "yes"
+msgstr "نعم"
+
+#: static/tmp_js/gui-form.js:302
+msgid "no"
+msgstr "لا"
+
+#: static/tmp_js/gui-form.js:319
+msgid "Close"
+msgstr "إغلاق"
+
+#: static/tmp_js/gui-methods.js:17
+msgid "Test passed successfully"
+msgstr "تم إجتياز الإختبار بنجاح "
+
+#: static/tmp_js/gui-methods.js:20
+msgid "Test failed:"
+msgstr "فشل الإختبار:"
+
+#: static/tmp_js/gui-methods.js:24
+msgid "Test error"
+msgstr "خطأ في الإختبار"
+
+#: static/tmp_js/gui-methods.js:56
+msgid "Edition successfully done"
+msgstr "تم التحرير بنجاح "
+
+#: static/tmp_js/gui-methods.js:78
+msgid "Overview"
+msgstr "نظرة عامة"
+
+#: static/tmp_js/gui-methods.js:101
+msgid "of type"
+msgstr "من نوع"
+
+#: static/tmp_js/gui-methods.js:119
+msgid "Creation successfully done"
+msgstr "تم الإنشاء بنجاح "
+
+#: static/tmp_js/gui-methods.js:139
+msgid "Are you sure do you want to delete "
+msgstr "هل أنت متأكد من أنك تريد حذف "
+
+#: static/tmp_js/gui-methods.js:139
+msgid "items:"
+msgstr "العناصر:"
+
+#: static/tmp_js/gui-methods.js:148
+msgid "Error deleting"
+msgstr "خطأ في الحذف"
+
+#: static/tmp_js/gui-methods.js:150
+msgid "Successfully deleted"
+msgstr "تم الحذف بنجاح "
+
+#: static/tmp_js/gui-methods.js:155
+msgid "Deletion results"
+msgstr "نتائج الحذف"
+
+#: static/tmp_js/gui-permissions.js:42
+msgid "Add"
+msgstr "إضافة"
+
+#: static/tmp_js/gui-permissions.js:67
+msgid "You must provide authenticator and"
+msgstr "يجب إضافة  المصادق و"
+
+#: static/tmp_js/gui-permissions.js:88
+msgid "Confirm revocation of following permissions: <br/>"
+msgstr "تأكيد إلغاء الأذونات التالية: <br/>"
+
+#: static/tmp_js/gui-permissions.js:98
+msgid "Remove "
+msgstr "إزالة "
+
+#: static/tmp_js/gui-permissions.js:99
+msgid "Revoke"
+msgstr "إبطال"
+
+#: static/tmp_js/gui-permissions.js:131
+msgid "Permissions for"
+msgstr "أذونات"
+
+#: static/tmp_js/gui-tools.js:14
+msgid "Just a moment..."
+msgstr "لحظة واحدة فقط..."
+
+#: static/tmp_js/gui-tools.js:146
+msgid "Never"
+msgstr "مطلقا"
+
+#: static/tmp_js/gui.js:21
+msgid "_MENU_ records per page"
+msgstr "__MENU_ records لكل صفحة"
+
+#: static/tmp_js/gui.js:22
+msgid "Empty"
+msgstr "فارغ"
+
+#: static/tmp_js/gui.js:23 static/tmp_js/gui.js:25
+msgid "No records"
+msgstr "لا توجد سجلات"
+
+#: static/tmp_js/gui.js:24
+msgid "Records _START_ to _END_ of _TOTAL_"
+msgstr "Records _START_ to _END_ of _TOTAL"
+
+#: static/tmp_js/gui.js:26
+msgid "(filtered from _MAX_ total records)"
+msgstr "(filtered from _MAX_ total records)"
+
+#: static/tmp_js/gui.js:27
+msgid "Please wait, processing"
+msgstr "الرجاء الانتظار، تجهيز"
+
+#: static/tmp_js/gui.js:28
+msgid "Filter"
+msgstr "مصفاة "
+
+#: static/tmp_js/gui.js:38
+#, javascript-format
+msgid "Selected %d rows"
+msgstr "تم تحديد %d صف "
+
+#: static/tmp_js/gui.js:39
+msgid "Click on a row to select it"
+msgstr "انقر فوق  صف لتحديده"
+
+#: static/tmp_js/gui.js:40
+msgid "Selected one row"
+msgstr "تحديد صف واحد"
+
+#: static/tmp_js/gui.js:46
+msgid "New"
+msgstr "جديد"
+
+#: static/tmp_js/gui.js:58
+msgid "Permissions"
+msgstr "أذونات"
+
+#: static/tmp_js/gui.js:62
+msgid "Xls"
+msgstr "Xls"
+
+#: static/tmp_js/gui.js:124
+msgid "Message"
+msgstr "رسالة"
+
+#: static/tmp_js/gui.js:132
+msgid "Connection failed"
+msgstr "فشل الاتصال"
+
+#: static/tmp_js/gui.js:229
+msgid "This field is required."
+msgstr "هذا الحقل مطلوب."
+
+#: static/tmp_js/gui.js:230
+msgid "Please fix this field."
+msgstr "الرجاء إصلاح هذا الحقل."
+
+#: static/tmp_js/gui.js:231
+msgid "Please enter a valid email address."
+msgstr "الرجاء إدخال عنوان بريد إلكتروني صالح."
+
+#: static/tmp_js/gui.js:232
+msgid "Please enter a valid URL."
+msgstr "الرجاء إدخال عنوان URL صالح."
+
+#: static/tmp_js/gui.js:233
+msgid "Please enter a valid date."
+msgstr "الرجاء إدخال تاريخ صالح."
+
+#: static/tmp_js/gui.js:234
+msgid "Please enter a valid date (ISO)."
+msgstr "الرجاء إدخال تاريخ صالح (ISO)."
+
+#: static/tmp_js/gui.js:235
+msgid "Please enter a valid number."
+msgstr "الرجاء إدخال عدد صحيح."
+
+#: static/tmp_js/gui.js:236
+msgid "Please enter only digits."
+msgstr "الرجاء إدخال الأرقام فقط."
+
+#: static/tmp_js/gui.js:237
+msgid "Please enter a valid credit card number."
+msgstr "الرجاء إدخال رقم بطاقة ائتمان صالحة."
+
+#: static/tmp_js/gui.js:238
+msgid "Please enter the same value again."
+msgstr "الرجاء إدخال القيمة نفسها مرة أخرى."
+
+#: static/tmp_js/gui.js:239
+msgid "Please enter no more than {0} characters."
+msgstr "الرجاء عدم إدخال أكثر من {0} حرفاً."
+
+#: static/tmp_js/gui.js:240
+msgid "Please enter at least {0} characters."
+msgstr "الرجاء إدخال على الأقل {0} حرفاً."
+
+#: static/tmp_js/gui.js:241
+msgid "Please enter a value between {0} and {1} characters long."
+msgstr "الرجاء إدخال قيمة بين {0} {1} أحرف."
+
+#: static/tmp_js/gui.js:242
+msgid "Please enter a value between {0} and {1}."
+msgstr "الرجاء إدخال قيمة بين {0} و {1}."
+
+#: static/tmp_js/gui.js:243
+msgid "Please enter a value less than or equal to {0}."
+msgstr "الرجاء إدخال قيمة أقل من أو تساوي إلى {0}."
+
+#: static/tmp_js/gui.js:244
+msgid "Please enter a value greater than or equal to {0}."
+msgstr "الرجاء إدخال قيمة أكبر من أو تساوي {0}."
+
+#: static/tmp_js/uds-client.js:43
+msgid "Contacting service..."
+msgstr "الاتصال بالخدمة..."
+
+#: static/tmp_js/uds-client.js:187
+msgid "Error accessing service: "
+msgstr "خطأ في الوصول إلى الخدمة: "
