@@ -12,3 +12,11 @@ sudo apt-get install -y mysql-server
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo npm install coffee-script -g
+mkdir ./src/log
+cd src
+python manage.py createcachetable
+python manage.py makemigartions 
+python manage.py migrate
+python manage.py runserver 0.0.0.0:8090
+
+
