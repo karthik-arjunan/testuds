@@ -19,7 +19,7 @@ from uds.core.managers.UserServiceManager import UserServiceManager
 from uds.core.util.State import State
 from uds.core.util import log
 from uds.models import TicketStore
-from uds.REST.methods.actor import SECURE_OWNER
+#from uds.REST.methods.actor import SECURE_OWNER
 
 import six
 

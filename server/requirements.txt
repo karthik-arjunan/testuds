@@ -17,7 +17,6 @@ MySQL-python==1.2.5
 olefile==0.44
 ovirt-engine-sdk-python==3.6.8.0
 paramiko==2.4.0
-Pillow==4.3.0
 pyasn1==0.4.2
 pycha==0.7.0
 pycparser==2.18
