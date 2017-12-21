@@ -1,3 +1,4 @@
 /log/
 .coverage
 *.pyc
+testuds/server/src/server/settings.py

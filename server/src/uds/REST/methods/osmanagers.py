@@ -46,10 +46,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Enclosed methods under /osm path
-import pdb
 
 class OsManagers(ModelHandler):
-    pdb.set_trace()
     model = OSManager
     save_fields = ['name', 'comments', 'tags']
 

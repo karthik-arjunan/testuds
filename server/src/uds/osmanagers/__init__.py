@@ -52,8 +52,6 @@ def __init__():
     import pkgutil
     import sys
     from uds.core import osmanagers
-    import pdb
-    pdb.set_trace()
     # Dinamycally import children of this package. The __init__.py files must register, if needed, inside ServiceProviderFactory
     pkgpath = os.path.dirname(sys.modules[__name__].__file__)
     for _, name, _ in pkgutil.iter_modules([pkgpath]):
