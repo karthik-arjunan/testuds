@@ -856,8 +856,6 @@ class ModelHandler(BaseModelHandler):
         self.ensureAccess(self.model(), permissions.PERMISSION_ALL, root=True)  # Must have write permissions to create, modify, etc..
 
         try:
-            import pdb
-            pdb.set_trace()
             # Extract fields
             args = self.readFieldsFromParams(self.save_fields)
             logger.debug('Args: {}'.format(args))
