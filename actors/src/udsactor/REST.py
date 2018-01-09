@@ -76,7 +76,7 @@ class OsManagerError(RESTError):
 
 # Disable warnings log messages
 try:
-    import urllib3  # @UnusedImport @UnresolvedImport
+    import urllib3  # @UnusedImport
 except Exception:
     from requests.packages import urllib3  # @Reimport
 
@@ -84,7 +84,7 @@ try:
     urllib3.disable_warnings()  # @UndefinedVariable
     warnings.simplefilter("ignore")
 except Exception:
-    pass  # In fact, isn't too important, but will log warns to logging file
+    pass  # In fact, isn't too important, but wil log warns to logging file
 
 
 def ensureResultIsOk(result):
@@ -148,8 +148,6 @@ class Api(object):
                     logger.debug('Requesting with old')
                     r = requests.get(url)  # Always ignore certs??
             else:
-                if data == '':
-                    data = '{"dummy": true}'  # Ensures no proxy rewrites POST as GET because body is empty...
                 if self.newerRequestLib:
                     r = requests.post(url, data=data, headers={'content-type': 'application/json'}, verify=VERIFY_CERT)
                 else:
@@ -223,24 +221,15 @@ class Api(object):
         logger.debug('Requesting information'.format())
         return self.postMessage('information', '')
 
-    def setReady(self, ipsInfo, hostName=None):
+    def setReady(self, ipsInfo):
         logger.debug('Notifying readyness: {}'.format(ipsInfo))
-        #    data = ','.join(['{}={}'.format(v[0], v[1]) for v in ipsInfo])
-        data = {
-            'ips': ipsInfo,
-            'hostname': hostName
-        }
+        data = ','.join(['{}={}'.format(v[0], v[1]) for v in ipsInfo])
         return self.postMessage('ready', data)
 
     def notifyIpChanges(self, ipsInfo):
         logger.debug('Notifying ip changes: {}'.format(ipsInfo))
         data = ','.join(['{}={}'.format(v[0], v[1]) for v in ipsInfo])
         return self.postMessage('ip', data)
-
-    def getTicket(self, ticketId, secure=False):
-        url = self._getUrl('ticket/' + ticketId, self.masterKey) + "&secure={}".format('1' if secure else '0')
-        return self._request(url)['result']
-
 
     def log(self, logLevel, message):
         data = json.dumps({'message': message, 'level': logLevel})
