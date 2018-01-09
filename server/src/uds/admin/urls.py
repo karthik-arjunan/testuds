@@ -26,18 +26,17 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
-from django.conf.urls import url
+from django.conf.urls import patterns
 
-import uds.admin.views
+__updated__ = '2015-04-29'
 
-__updated__ = '2016-08-26'
-
-urlpatterns = [
-    url(r'^$', uds.admin.views.index, name='uds.admin.views.index'),
-    url(r'^tmpl/(?P<template>[a-zA-Z0-9_-]*)$', uds.admin.views.tmpl, name='uds.admin.views.tmpl'),
-    url(r'^sample$', uds.admin.views.sample, name='uds.admin.views.sample'),
-]
+urlpatterns = patterns(
+    'uds.admin.views',
+    (r'^$', 'index'),
+    (r'^tmpl/(?P<template>[a-zA-Z0-9_-]*)$', 'tmpl'),
+    (r'^sample$', 'sample'),
+)

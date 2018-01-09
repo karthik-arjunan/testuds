@@ -27,7 +27,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 OS Manager modules for uds are contained inside this package.
 To create a new OS manager module, you will need to follow this steps:
     1.- Create the os manager module, probably based on an existing one
@@ -39,19 +39,18 @@ To create a new OS manager module, you will need to follow this steps:
 The registration of modules is done locating subclases of :py:class:`uds.core.auths.Authentication`
 
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
-
 def __init__():
-    """
+    '''
     This imports all packages that are descendant of this package, and, after that,
     it register all subclases of service provider as
-    """
-    import os.path
-    import pkgutil
+    '''
+    import os.path, pkgutil
     import sys
     from uds.core import osmanagers
+
     # Dinamycally import children of this package. The __init__.py files must register, if needed, inside ServiceProviderFactory
     pkgpath = os.path.dirname(sys.modules[__name__].__file__)
     for _, name, _ in pkgutil.iter_modules([pkgpath]):

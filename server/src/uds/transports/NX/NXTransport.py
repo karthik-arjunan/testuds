@@ -27,18 +27,18 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-"""
+'''
 Created on Jul 29, 2011
 
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from django.utils.translation import ugettext_noop as _
 from uds.core.managers.UserPrefsManager import CommonPrefs
 from uds.core.ui.UserInterface import gui
 from uds.core.transports.BaseTransport import Transport
 from uds.core.transports import protocols
 from uds.core.util import OsDetector
+from uds.core.util import connection
 from .NXFile import NXFile
 
 import logging
@@ -50,13 +50,13 @@ READY_CACHE_TIMEOUT = 30
 
 
 class NXTransport(Transport):
-    """
-    Provides access via RDP to service.
+    '''
+    Provides access via NX to service.
     This transport can use an domain. If username processed by authenticator contains '@', it will split it and left-@-part will be username, and right password
-    """
-    typeName = _('NX Transport (direct)')
+    '''
+    typeName = _('NX v3.5')
     typeType = 'NXTransport'
-    typeDescription = _('NX Transport for direct connection')
+    typeDescription = _('NX Protocol v3.5. Direct connection.')
     iconFile = 'nx.png'
     protocol = protocols.NX
 
@@ -119,9 +119,9 @@ class NXTransport(Transport):
             self._cacheMem = ''
 
     def marshal(self):
-        """
+        '''
         Serializes the transport data so we can store it in database
-        """
+        '''
         return str.join('\t', ['v1', gui.boolToStr(self._useEmptyCreds), self._fixedName, self._fixedPassword, self._listenPort,
                                self._connection, self._session, self._cacheDisk, self._cacheMem])
 
@@ -144,15 +144,15 @@ class NXTransport(Transport):
         }
 
     def isAvailableFor(self, userService, ip):
-        """
+        '''
         Checks if the transport is available for the requested destination ip
         Override this in yours transports
-        """
+        '''
         logger.debug('Checking availability for {0}'.format(ip))
         ready = self.cache.get(ip)
         if ready is None:
             # Check again for readyness
-            if self.testServer(userService, ip, self._listenPort) is True:
+            if connection.testServer(ip, self._listenPort) is True:
                 self.cache.put(ip, 'Y', READY_CACHE_TIMEOUT)
                 return True
             else:

@@ -13,16 +13,16 @@ import six
 
 def execNewXFreeRdp(parent, xfreerdp):
     import subprocess  # @Reimport
-    params = [xfreerdp] + sp['as_new_xfreerdp_params'] + ['/v:{}'.format(sp['address'])]  # @UndefinedVariable
+    params = [xfreerdp] + {m.r.as_new_xfreerdp_params} + ['/v:{m.r.address}']  # @UndefinedVariable
     tools.addTaskToWait(subprocess.Popen(params))
 
 
 def execRdesktop(parent, rdesktop):
     import subprocess  # @Reimport
-    params = [rdesktop] + sp['as_rdesktop_params'] + [sp['address']]  # @UndefinedVariable
+    params = [rdesktop] + {m.r.as_rdesktop_params} + ['{m.r.address}']  # @UndefinedVariable
     p = subprocess.Popen(params, stdin=subprocess.PIPE)
-    if sp['password'] != '':  # @UndefinedVariable
-        p.stdin.write(sp['password'])  # @UndefinedVariable
+    if '{m.password}' != '':
+        p.stdin.write('{m.password}')
     p.stdin.close()
     tools.addTaskToWait(p)
 
@@ -49,11 +49,12 @@ if xfreerdp is not None:
             fnc, app = execNewXFreeRdp, xfreerdp
 
     except Exception as e:  # Valid version not found, pass to check rdesktop
+        # QtGui.QMessageBox.critical(parent, 'Notice', six.text_type(e), QtGui.QMessageBox.Ok)  # @UndefinedVariable
         pass
 
 if app is None or fnc is None:
     raise Exception('''<p>You need to have installed xfreerdp (>= 1.1) or rdesktop, and have them in your PATH in order to connect to this UDS service.</p>
-    <p>Please, install the proper package for your system.</p>
+    <p>Please, install apropiate package for your system.</p>
     <p>Also note that xfreerdp prior to version 1.1 will not be taken into consideration.</p>
 ''')
 else:

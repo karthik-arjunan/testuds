@@ -27,12 +27,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-"""
+'''
 Created on Jul 29, 2011
 
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from django.utils.translation import ugettext_noop as _
 from uds.core.managers.UserPrefsManager import CommonPrefs
 from uds.core.ui.UserInterface import gui
@@ -40,6 +39,7 @@ from uds.core.transports.BaseTransport import Transport
 from uds.core.transports.BaseTransport import TUNNELED_GROUP
 from uds.core.transports import protocols
 from uds.models import TicketStore
+from uds.core.util import connection
 from uds.core.util import OsDetector
 from uds.core.util.tools import DictAsObj
 from .NXFile import NXFile
@@ -55,15 +55,14 @@ READY_CACHE_TIMEOUT = 30
 
 
 class TSNXTransport(Transport):
-    """
-    Provides access via RDP to service.
+    '''
+    Provides access via NX to service.
     This transport can use an domain. If username processed by authenticator contains '@', it will split it and left-@-part will be username, and right password
-    """
-    typeName = _('NX Transport (tunneled)')
+    '''
+    typeName = _('NX v3.5')
     typeType = 'TSNXTransport'
-    typeDescription = _('NX Transport for tunneled connection')
+    typeDescription = _('NX protocol v3.5. Tunneled connection.')
     iconFile = 'nx.png'
-    needsJava = True  # If this transport needs java for rendering
     protocol = protocols.NX
     group = TUNNELED_GROUP
 
@@ -135,9 +134,9 @@ class TSNXTransport(Transport):
             self._cacheMem = ''
 
     def marshal(self):
-        """
+        '''
         Serializes the transport data so we can store it in database
-        """
+        '''
         return str.join('\t', ['v1', gui.boolToStr(self._useEmptyCreds), self._fixedName, self._fixedPassword, self._listenPort,
                                self._connection, self._session, self._cacheDisk, self._cacheMem, self._tunnelServer, self._tunnelCheckServer])
 
@@ -162,15 +161,15 @@ class TSNXTransport(Transport):
         }
 
     def isAvailableFor(self, userService, ip):
-        """
+        '''
         Checks if the transport is available for the requested destination ip
         Override this in yours transports
-        """
+        '''
         logger.debug('Checking availability for {0}'.format(ip))
         ready = self.cache.get(ip)
         if ready is None:
             # Check again for readyness
-            if self.testServer(userService, ip, self._listenPort) is True:
+            if connection.testServer(ip, self._listenPort) is True:
                 self.cache.put(ip, 'Y', READY_CACHE_TIMEOUT)
                 return True
             else:

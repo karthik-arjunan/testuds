@@ -5,9 +5,9 @@
 # All rights reserved.
 #
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 import logging
@@ -29,10 +29,10 @@ The registration of modules is done locating subclases of :py:class:`uds.core.au
 
 
 def __init__():
-    """
+    '''
     This imports all packages that are descendant of this package, and, after that,
     it register all subclases of service provider as
-    """
+    '''
     import os.path
     import pkgutil
     import sys
@@ -40,11 +40,7 @@ def __init__():
     # Dinamycally import children of this package. The __init__.py files must register, if needed, inside ServiceProviderFactory
     pkgpath = os.path.dirname(sys.modules[__name__].__file__)
     for _, name, _ in pkgutil.iter_modules([pkgpath]):
-        try:
-            logger.info('Loading dispatcher {}'.format(name))
-            __import__(name, globals(), locals(), [], -1)
-        except:
-            logger.exception('Loading dispatcher {}'.format(name))
+        __import__(name, globals(), locals(), [], -1)
 
     logger.debug('Dispatchers initialized')
 

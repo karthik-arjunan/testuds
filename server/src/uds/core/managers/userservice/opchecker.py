@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2012-2017 Virtual Cable S.L.
+# Copyright (c) 2012 Virtual Cable S.L.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from uds.core.jobs.DelayedTask import DelayedTask
@@ -62,16 +62,8 @@ class StateUpdater(object):
     def save(self, newState=None):
         if newState is not None:
             self.userService.setState(newState)
-
         self.userService.updateData(self.userServiceInstance)
         self.userService.save()
-
-    def logIp(self):
-        ip = self.userServiceInstance.getIp()
-
-        if ip is not None and ip != '':
-            self.userService.logIP(ip)
-
 
     def checkLater(self):
         UserServiceOpChecker.checkLater(self.userService, self.userServiceInstance)
@@ -129,8 +121,6 @@ class UpdateFromPreparing(StateUpdater):
             if rs != State.FINISHED:
                 self.checkLater()
                 state = self.userService.state  # No not alter current state if after notifying os manager the user service keeps working
-            else:
-                self.logIp()
 
         return state
 
@@ -171,9 +161,9 @@ class UpdateFromOther(StateUpdater):
 
 
 class UserServiceOpChecker(DelayedTask):
-    """
+    '''
     This is the delayed task responsible of executing the service tasks and the service state transitions
-    """
+    '''
     def __init__(self, service):
         super(UserServiceOpChecker, self).__init__()
         self._svrId = service.id
@@ -181,18 +171,18 @@ class UserServiceOpChecker(DelayedTask):
 
     @staticmethod
     def makeUnique(userService, userServiceInstance, state):
-        """
+        '''
         This method ensures that there will be only one delayedtask related to the userService indicated
-        """
+        '''
         DelayedTaskRunner.runner().remove(USERSERVICE_TAG + userService.uuid)
         UserServiceOpChecker.checkAndUpdateState(userService, userServiceInstance, state)
 
     @staticmethod
     def checkAndUpdateState(userService, userServiceInstance, state):
-        """
+        '''
         Checks the value returned from invocation to publish or checkPublishingState, updating the servicePoolPub database object
         Return True if it has to continue checking, False if finished
-        """
+        '''
         try:
             # Fills up basic data
             userService.unique_id = userServiceInstance.getUniqueId()  # Updates uniqueId
@@ -216,11 +206,11 @@ class UserServiceOpChecker(DelayedTask):
 
     @staticmethod
     def checkLater(userService, ci):
-        """
+        '''
         Inserts a task in the delayedTaskRunner so we can check the state of this publication
         @param dps: Database object for DeployedServicePublication
         @param pi: Instance of Publication manager for the object
-        """
+        '''
         # Do not add task if already exists one that updates this service
         if DelayedTaskRunner.runner().checkExists(USERSERVICE_TAG + userService.uuid):
             return
@@ -239,9 +229,9 @@ class UserServiceOpChecker(DelayedTask):
             logger.debug("uService instance class: {0}".format(ci.__class__))
             state = ci.checkState()
             UserServiceOpChecker.checkAndUpdateState(uService, ci, state)
-        except UserService.DoesNotExist as e:
+        except UserService.DoesNotExist, e:
             logger.error('User service not found (erased from database?) {0} : {1}'.format(e.__class__, e))
-        except Exception as e:
+        except Exception, e:
             # Exception caught, mark service as errored
             logger.exception("Error {0}, {1} :".format(e.__class__, e))
             if uService is not None:

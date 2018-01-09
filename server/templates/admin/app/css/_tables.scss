@@ -70,20 +70,17 @@ This states displays as default
 }
 
 .row-state-S {
-  color: gray;
-}
-
-.row-running-Yes {
-  color: green;
+    color: gray;
 }
 
 @media (max-width: 768px) {
   .label-tbl-button {
     display: none;
   }
-
+  
   .uds-table {
     min-height: 0px;
   }
 
 }
+

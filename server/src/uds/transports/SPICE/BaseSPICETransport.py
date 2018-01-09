@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 
 from django.utils.translation import ugettext_noop as _
 from uds.core.managers.UserPrefsManager import CommonPrefs
@@ -44,8 +44,7 @@ from uds.services.OVirt.OVirtProvider import Provider as oVirtProvider
 import logging
 import os
 
-__updated__ = '2017-10-13'
-
+__updated__ = '2017-12-20'
 
 logger = logging.getLogger(__name__)
 
@@ -53,10 +52,10 @@ READY_CACHE_TIMEOUT = 30
 
 
 class BaseSpiceTransport(Transport):
-    """
-    Provides access via RDP to service.
+    '''
+    Provides access via SPICE to service.
     This transport can use an domain. If username processed by authenticator contains '@', it will split it and left-@-part will be username, and right password
-    """
+    '''
     iconFile = 'spice.png'
     protocol = protocols.SPICE
     allowedProviders = oVirtProvider.offers
@@ -116,9 +115,9 @@ class BaseSpiceTransport(Transport):
     )
 
     def isAvailableFor(self, userService, ip):
-        """
+        '''
         Checks if the transport is available for the requested destination ip
-        """
+        '''
         ready = self.cache.get(ip)
         if ready is None:
             userServiceInstance = userService.getInstance()
@@ -144,7 +143,7 @@ class BaseSpiceTransport(Transport):
                            'Could not reach server "{}" on port "{}" from broker (prob. causes are name resolution & firewall rules)'.format(con['address'], port_to_test),
                            120)
 
-            if self.testServer(userService, con['address'], port_to_test) is True:
+            if connection.testServer(con['address'], port_to_test) is True:
                 self.cache.put(ip, 'Y', READY_CACHE_TIMEOUT)
                 ready = 'Y'
 

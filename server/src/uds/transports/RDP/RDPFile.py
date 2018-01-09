@@ -27,21 +27,19 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-"""
+'''
 Created on Jul 29, 2011
 
 @author: Adolfo Gómez, dkmaster at dkmon dot com
 
-"""
+'''
 from __future__ import unicode_literals
 
 from uds.core.util import OsDetector
 import six
-import os
-import urllib
+import shlex
 
-__updated__ = '2017-09-18'
+__updated__ = '2017-12-21'
 
 
 class RDPFile(object):
@@ -56,6 +54,7 @@ class RDPFile(object):
     redirectSerials = False
     redirectPrinters = False
     redirectDrives = False
+    redirectHome = False
     redirectSmartcards = False
     redirectAudio = True
     compression = True
@@ -93,21 +92,24 @@ class RDPFile(object):
 
     @property
     def as_new_xfreerdp_params(self):
-        """
+        '''
         Parameters for xfreerdp >= 1.1.0 with self rdp description
         Note that server is not added
-        """
+        '''
         params = ['/t:UDS-Connection', '/cert-ignore']  # , '/sec:rdp']
 
         if self.enableClipboard:
             params.append('/clipboard')
 
-        if self.redirectSmartcards and self.smartcardString not in (None, ''):
-            params.append('/smartcard:{}'.format(self.smartcardString))
+        if self.redirectSmartcards:
+            if self.smartcardString not in (None, ''):
+                params.append('/smartcard:{}'.format(self.smartcardString))
+            else:
+                params.append('/smartcard')
 
         if self.redirectAudio:
             if self.alsa:
-                params.append('/sound:sys:alsa')
+                params.append('/sound:sys:alsa,format:1,quality:high')
                 params.append('/microphone:sys:alsa')
                 if self.multimedia:
                     params.append('/multimedia:sys:alsa')
@@ -119,13 +121,19 @@ class RDPFile(object):
 
         if self.redirectDrives is True:
             params.append('/drive:media,/media')
-            params.append('/home-drive')
+            # params.append('/home-drive')
+
+        if self.redirectHome is True:
+            params.append('/drive:home,/home')
 
         if self.redirectSerials is True:
             params.append('/serial:/dev/ttyS0')
 
-        if self.redirectPrinters and self.printerString not in (None, ''):
-            params.append('/printer:{}'.format(self.printerString))
+        if self.redirectPrinters:
+            if self.printerString not in (None, ''):
+                params.append('/printer:{}'.format(self.printerString))
+            else:
+                params.append('/printer')
 
         if self.compression:
             params.append('/compression:on')
@@ -144,24 +152,35 @@ class RDPFile(object):
             params.append('/h:{}'.format(self.height))
 
         params.append('/bpp:{}'.format(self.bpp))
+
+        # RDP Security is A MUST if no username nor password is provided
+        # NLA requires USERNAME&PASSWORD previously
+        forceRDPSecurity = False
         if self.username != '':
             params.append('/u:{}'.format(self.username))
+        else:
+            forceRDPSecurity = True
         if self.password != '':
             params.append('/p:{}'.format(self.password))
+        else:
+            forceRDPSecurity = True
         if self.domain != '':
             params.append('/d:{}'.format(self.domain))
 
+        if forceRDPSecurity:
+            params.append('/sec:rdp')
+
         if self.linuxCustomParameters is not None and self.linuxCustomParameters.strip() != '':
-            params.append(self.linuxCustomParameters.strip())
+            params += shlex.split(self.linuxCustomParameters.strip())
 
         return params
 
     @property
     def as_rdesktop_params(self):
-        """
+        '''
         Parameters for rdestop with self rdp description
         Note that server is not added
-        """
+        '''
 
         params = ['-TUDS Connection', '-P']
 
@@ -210,38 +229,6 @@ class RDPFile(object):
             params.append('-d{}'.format(self.domain))
 
         return params
-
-    @property
-    def as_cord_url(self):
-        url = 'rdp://'
-
-        if self.username != '':
-            url += urllib.quote(self.username)
-            if self.password != '':
-                url += ':' + urllib.quote(self.password)
-            url += '@'
-        url += self.address + '/'
-
-        if self.domain != '':
-            url += self.domain
-
-        url += '?screenDepth###{}'.format(self.bpp)
-
-        if self.fullScreen:  # @UndefinedVariable
-            url += '&fullscreen###true'
-        else:
-            url += '&screenWidth###{}&screenHeight###{}'.format(self.width, self.height)
-
-        # url += '&forwardAudio###' + '01'[{m.r.redirectAudio}]  # @UndefinedVariable
-
-        if self.redirectDrives:  # @UndefinedVariable
-            url += '&forwardDisks###true'
-
-        if self.redirectPrinters:  # @UndefinedVariable
-            url += '&forwardPrinters###true'
-
-        return url
-
 
     def getGeneric(self):
         password = "{password}"

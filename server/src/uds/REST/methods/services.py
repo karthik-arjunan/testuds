@@ -27,14 +27,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
-from uds.models import Service, UserService, Tag, Proxy
+from uds.models import Service, UserService, Tag
 
 from uds.core.services import Service as coreService
 from uds.core.util import log
@@ -45,19 +45,17 @@ from uds.REST.model import DetailHandler
 from uds.REST import NotFound, ResponseError, RequestError
 from django.db import IntegrityError
 from uds.core.ui.images import DEFAULT_THUMB_BASE64
-from uds.core.ui.UserInterface import gui
 from uds.core.util.State import State
 
-import six
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class Services(DetailHandler):  # pylint: disable=too-many-public-methods
-    """
+    '''
     Detail handler for Services, whose parent is a Provider
-    """
+    '''
 
     custom_methods = ['servicesPools']
 
@@ -68,7 +66,7 @@ class Services(DetailHandler):  # pylint: disable=too-many-public-methods
             'icon': info.icon().replace('\n', ''),
             'needs_publication': info.publicationType is not None,
             'max_deployed': info.maxDeployed,
-            'uses_cache': info.usesCache and info.cacheConstrains is None,
+            'uses_cache': info.usesCache,
             'uses_cache_l2': info.usesCache_L2,
             'cache_tooltip': _(info.cacheTooltip),
             'cache_tooltip_l2': _(info.cacheTooltip_L2),
@@ -80,11 +78,11 @@ class Services(DetailHandler):  # pylint: disable=too-many-public-methods
 
     @staticmethod
     def serviceToDict(item, perm, full=False):
-        """
+        '''
         Convert a service db item to a dict for a rest response
         :param item: Service item (db)
         :param full: If full is requested, add "extra" fields to complete information
-        """
+        '''
         itemType = item.getType()
         retVal = {
             'id': item.uuid,
@@ -93,10 +91,8 @@ class Services(DetailHandler):  # pylint: disable=too-many-public-methods
             'comments': item.comments,
             'type': item.data_type,
             'type_name': _(itemType.name()),
-            'proxy_id': item.proxy.uuid if item.proxy is not None else '-1',
-            'proxy': item.proxy.name if item.proxy is not None else '',
             'deployed_services_count': item.deployedServices.count(),
-            'user_services_count': UserService.objects.filter(deployed_service__service=item).exclude(state__in=(State.REMOVED, State.ERROR)).count(),
+            'user_services_count': UserService.objects.filter(deployed_service__service=item).exclude(state__in=State.INFO_STATES).count(),
             'maintenance_mode': item.provider.maintenance_mode,
             'permission': perm
         }
@@ -123,10 +119,10 @@ class Services(DetailHandler):  # pylint: disable=too-many-public-methods
         return {'field': 'maintenance_mode', 'prefix': 'row-maintenance-'}
 
     def _deleteIncompleteService(self, service):  # pylint: disable=no-self-use
-        """
+        '''
         Deletes a service if it is needed to (that is, if it is not None) and silently catch any exception of this operation
         :param service:  Service to delete (may be None, in which case it does nothing)
-        """
+        '''
         if service is not None:
             try:
                 service.delete()
@@ -137,22 +133,10 @@ class Services(DetailHandler):  # pylint: disable=too-many-public-methods
         # Extract item db fields
         # We need this fields for all
         logger.debug('Saving service {0} / {1}'.format(parent, item))
-        fields = self.readFieldsFromParams(['name', 'comments', 'data_type', 'tags', 'proxy_id'])
+        fields = self.readFieldsFromParams(['name', 'comments', 'data_type', 'tags'])
         tags = fields['tags']
         del fields['tags']
         service = None
-
-        proxyId = fields['proxy_id']
-        fields['proxy_id'] = None
-        logger.debug('Proxy id: {}'.format(proxyId))
-
-        proxy = None
-        if proxyId != '-1':
-            try:
-                proxy = Proxy.objects.get(uuid=processUuid(proxyId))
-            except Exception:
-                logger.exception('Getting proxy ID')
-
         try:
             if item is None:  # Create new
                 service = parent.services.create(**fields)
@@ -161,7 +145,6 @@ class Services(DetailHandler):  # pylint: disable=too-many-public-methods
                 service.__dict__.update(fields)
 
             service.tags = [Tag.objects.get_or_create(tag=val)[0] for val in tags]
-            service.proxy = proxy
 
             service.data = service.getInstance(self._params).serialize()  # This may launch an validation exception (the getInstance(...) part)
             service.save()
@@ -172,7 +155,7 @@ class Services(DetailHandler):  # pylint: disable=too-many-public-methods
         except coreService.ValidationException as e:
             if item is None:  # Only remove partially saved element if creating new (if editing, ignore this)
                 self._deleteIncompleteService(service)
-            raise RequestError(_('Input error: {0}'.format(six.text_type(e))))
+            raise RequestError(_('Input error: {0}'.format(unicode(e))))
         except Exception as e:
             self._deleteIncompleteService(service)
             logger.exception('Saving Service')
@@ -205,7 +188,6 @@ class Services(DetailHandler):  # pylint: disable=too-many-public-methods
             {'name': {'title': _('Service name'), 'visible': True, 'type': 'iconType'}},
             {'comments': {'title': _('Comments')}},
             {'type_name': {'title': _('Type')}},
-            {'proxy': {'title': _('Proxy')}},
             {'deployed_services_count': {'title': _('Services Pools'), 'type': 'numeric'}},
             {'user_services_count': {'title': _('User services'), 'type': 'numeric'}},
             {'tags': {'title': _('tags'), 'visible': False}},
@@ -236,24 +218,10 @@ class Services(DetailHandler):  # pylint: disable=too-many-public-methods
             parentInstance = parent.getInstance()
             serviceType = parentInstance.getServiceByType(forType)
             service = serviceType(Environment.getTempEnv(), parentInstance)  # Instantiate it so it has the opportunity to alter gui description based on parent
-            g = self.addDefaultFields(service.guiDescription(service), ['name', 'comments', 'tags'])
-            for f in [{
-                'name': 'proxy_id',
-                'values': [gui.choiceItem(-1, '')] + gui.sortedChoices([gui.choiceItem(v.uuid, v.name) for v in Proxy.objects.all()]),
-                'label': ugettext('Proxy'),
-                'tooltip': ugettext('Proxy for services behind a firewall'),
-                'type': gui.InputField.CHOICE_TYPE,
-                'tab': ugettext('Advanced'),
-                'order': 132,
-                },
-            ]:
-                self.addField(g, f)
-
-            return g
-
+            return self.addDefaultFields(service.guiDescription(service), ['name', 'comments', 'tags'])
         except Exception as e:
             logger.exception('getGui')
-            raise ResponseError(six.text_type(e))
+            raise ResponseError(unicode(e))
 
     def getLogs(self, parent, item):
         try:

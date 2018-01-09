@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 
 from django.utils.translation import ugettext_noop as _
 from uds.core.managers.UserPrefsManager import CommonPrefs
@@ -38,26 +38,26 @@ from uds.core.util import tools
 from .BaseX2GOTransport import BaseX2GOTransport
 from . import x2gofile
 
-import six
 import logging
 
-__updated__ = '2017-01-30'
+__updated__ = '2017-12-20'
 
 logger = logging.getLogger(__name__)
 
 
 class X2GOTransport(BaseX2GOTransport):
-    """
-    Provides access via SPICE to service.
+    '''
+    Provides access via X2GO to service.
     This transport can use an domain. If username processed by authenticator contains '@', it will split it and left-@-part will be username, and right password
-    """
-    typeName = _('X2Go Transport Experimental (direct)')
+    '''
+    typeName = _('X2Go')
     typeType = 'X2GOTransport'
-    typeDescription = _('X2Go Transport for direct connection (EXPERIMENTAL)')
+    typeDescription = _('X2Go access (Experimental). Direct connection.')
 
     fixedName = BaseX2GOTransport.fixedName
     # fullScreen = BaseX2GOTransport.fullScreen
     desktopType = BaseX2GOTransport.desktopType
+    customCmd = BaseX2GOTransport.customCmd
     sound = BaseX2GOTransport.sound
     exports = BaseX2GOTransport.exports
     speed = BaseX2GOTransport.speed
@@ -76,13 +76,17 @@ class X2GOTransport(BaseX2GOTransport):
 
         width, height = CommonPrefs.getWidthHeight(prefs)
 
+        desktop = self.desktopType.value
+        if desktop == "UDSVAPP":
+            desktop = "/usr/bin/udsvapp " + self.customCmd.value
+
         xf = x2gofile.getTemplate(
             speed=self.speed.value,
             pack=self.pack.value,
             quality=self.quality.value,
             sound=self.sound.isTrue(),
             soundSystem=self.sound.value,
-            windowManager=self.desktopType.value,
+            windowManager=desktop,
             exports=self.exports.isTrue(),
             width=width,
             height=height,
@@ -114,6 +118,6 @@ class X2GOTransport(BaseX2GOTransport):
         }.get(m.os)
 
         if os is None:
-            return super(self.__class__, self).getUDSTransportScript(userService, transport, ip, os, user, password, request)
+            return super(X2GOTransport, self).getUDSTransportScript(self, userService, transport, ip, os, user, password, request)
 
         return self.getScript('scripts/{}/direct.py'.format(os)).format(m=m)

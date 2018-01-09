@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -37,7 +37,7 @@ from uds.core.ui.UserInterface import gui
 from uds.core.reports import stock
 from uds.models import Authenticator
 
-import six
+import StringIO
 import csv
 
 from .base import ListReport
@@ -131,7 +131,7 @@ class ListReportUsers(ListReport):
         auth = Authenticator.objects.get(uuid=self.authenticator.value)
         users = auth.users.order_by('name')
 
-        output = six.StringIO()
+        output = StringIO.StringIO()
 
         report = UsersReport(queryset=users)
         report.title = _('Users List for {}').format(auth.name)

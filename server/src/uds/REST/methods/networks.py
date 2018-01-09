@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @itemor: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _, ugettext
@@ -40,7 +40,6 @@ from uds.core.ui.UserInterface import gui
 
 from uds.REST.model import ModelHandler, SaveException
 
-import six
 import logging
 
 logger = logging.getLogger(__name__)
@@ -49,10 +48,10 @@ logger = logging.getLogger(__name__)
 
 
 class Networks(ModelHandler):
-    """
+    '''
     Processes REST requests about networks
     Implements specific handling for network related requests using GUI
-    """
+    '''
     model = Network
     save_fields = ['name', 'net_string', 'tags']
 
@@ -71,7 +70,7 @@ class Networks(ModelHandler):
             fields['net_start'] = nr[0]
             fields['net_end'] = nr[1]
         except Exception as e:
-            raise SaveException(ugettext('Invalid network: ') + six.text_type(e))
+            raise SaveException(ugettext('Invalid network: ') + unicode(e))
         logger.debug('Processed {0}'.format(fields))
 
     def getGui(self, type_):

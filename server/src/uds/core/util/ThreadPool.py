@@ -29,7 +29,7 @@
 
 from __future__ import unicode_literals
 
-import six
+import Queue
 from threading import Thread
 
 import logging
@@ -53,7 +53,7 @@ class Worker(Thread):
         while self._stop is False:
             try:
                 func, args, kargs = self._tasks.get(block=True, timeout=1)
-            except six.moves.queue.Empty:
+            except Queue.Empty:
                 continue
 
             try:
@@ -66,14 +66,14 @@ class Worker(Thread):
 
 class ThreadPool:
     def __init__(self, num_threads, queueSize=DEFAULT_QUEUE_SIZE):
-        self._tasks = six.moves.queue.Queue(queueSize)
+        self._tasks = Queue.Queue(queueSize)
         self._numThreads = num_threads
         self._threads = []
 
     def add_task(self, func, *args, **kargs):
-        """
+        '''
         Add a task to the queue
-        """
+        '''
         if len(self._threads) == 0:
             for _ in range(self._numThreads):
                 self._threads.append(Worker(self._tasks))
@@ -81,9 +81,9 @@ class ThreadPool:
         self._tasks.put((func, args, kargs))
 
     def wait_completion(self):
-        """
+        '''
         Wait for completion of all the tasks in the queue
-        """
+        '''
         self._tasks.join()
 
         # Now we will close all running tasks

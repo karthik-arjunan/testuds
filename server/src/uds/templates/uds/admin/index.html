@@ -117,7 +117,6 @@
         <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-authenticators.coffee"></script>
         <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-osmanagers.coffee"></script>
         <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-connectivity.coffee"></script>
-        <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-proxies.coffee"></script>
         <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-servicespools.coffee"></script>
         <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-servicespools-calendars.coffee"></script>
         <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-servicespools-actions.coffee"></script>
@@ -127,9 +126,7 @@
         <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-gallery.coffee"></script>
         <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-servicespoolsgroup.coffee"></script>
         <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-reports.coffee"></script>
-        <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-calendars.coffee"></script>
-        <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-accounts.coffee"></script>
-
+        <script type="text/coffeescript" charset="utf-8" src="{% get_static_prefix %}adm/js/gui-d-calendar.coffee"></script>
         <!-- base64 encoding -->
         <script src="{% get_static_prefix %}adm/js/base64.js"></script>
 
@@ -167,8 +164,8 @@
                 $('.side-nav > ul > li.dropdown').removeClass('open');
                 showHideTooltip();
               },
-              timeout: 50, // 200,
-              interval: 60 // 500
+              timeout: 50,
+              interval: 50
             });
 
             // set default error function
@@ -199,18 +196,14 @@
         {% js_template 'osmanagers' %}
         {% js_template 'connectivity' %}
         {% js_template 'services_pool' %}
-        {% js_template 'services_pool_groups' %}
         {% js_template 'pool_access_default' %}
         {% js_template 'pool_add_access' %}
-        {% js_template 'pool_add_action' %}
         {% js_template 'configuration' %}
         {% js_template 'gallery' %}
         {% js_template 'permissions' %}
         {% js_template 'permissions_add' %}
         {% js_template 'reports' %}
         {% js_template 'calendars' %}
-        {% js_template 'accounts' %}
-        {% js_template 'proxies' %}
 
         <!-- utility pages -->
         {% js_template 'request_failed' %}

@@ -27,12 +27,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
-import six
 import datetime
 import logging
 
@@ -71,7 +70,7 @@ class JobsFactory(object):
         try:
             logger.debug('Ensuring that jobs are registered inside database')
             workers.initialize()
-            for name, type_ in six.iteritems(self._jobs):
+            for name, type_ in self._jobs.iteritems():
                 try:
                     type_.setup()
                     # We use database server datetime

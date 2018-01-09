@@ -25,20 +25,22 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.core.urlresolvers import reverse
+from uds.core.util import log
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page, never_cache
 
 from uds.core.auths.auth import webLoginRequired, webPassword
 from uds.core.managers import userServiceManager, cryptoManager
-from uds.models import TicketStore
+from uds.models import TicketStore, UserService
 from uds.core.ui.images import DEFAULT_IMAGE
 from uds.core.ui import theme
 from uds.core.util.model import processUuid
@@ -54,6 +56,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+__updated__ = '2017-11-16'
+
 
 @webLoginRequired(admin=False)
 def transportOwnLink(request, idService, idTransport):
@@ -63,12 +67,13 @@ def transportOwnLink(request, idService, idTransport):
         # This returns a response object in fact
         return itrans.getLink(userService, trans, ip, request.os, request.user, webPassword(request), request)
     except ServiceNotReadyError as e:
-        return render(request,
+        return render_to_response(
             theme.template('service_not_ready.html'),
             {
                 'fromLauncher': False,
                 'code': e.code
-            }
+            },
+            context_instance=RequestContext(request)
         )
     except Exception as e:
         logger.exception("Exception")
@@ -140,7 +145,6 @@ def clientEnabler(request, idService, idTransport):
         logger.exception('Error')
         error = six.text_type(e)
 
-
     return HttpResponse(
         json.dumps({
             'url': six.text_type(url),
@@ -148,6 +152,7 @@ def clientEnabler(request, idService, idTransport):
         }),
         content_type='application/json'
     )
+
 
 @webLoginRequired(admin=False)
 @never_cache
@@ -162,8 +167,8 @@ def release(request, idService):
             "Removing User Service {} as requested by {} from {}".format(userService.friendly_name, request.user.pretty_name, request.ip),
             log.WEB
         )
+        userServiceManager().requestLogoff(userService)
         userService.release()
-
 
     return HttpResponseRedirect(reverse('Index'))
 

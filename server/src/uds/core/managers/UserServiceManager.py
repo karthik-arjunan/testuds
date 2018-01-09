@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext as _
@@ -51,6 +51,7 @@ import requests
 import json
 import logging
 
+__updated__ = '2017-11-17'
 
 logger = logging.getLogger(__name__)
 traceLogger = logging.getLogger('traceLog')
@@ -77,10 +78,10 @@ class UserServiceManager(object):
         return Q(state__in=[State.PREPARING, State.USABLE])
 
     def __checkMaxDeployedReached(self, deployedService):
-        """
+        '''
         Checks if maxDeployed for the service has been reached, and, if so,
         raises an exception that no more services of this kind can be reached
-        """
+        '''
         serviceInstance = deployedService.service.getInstance()
         # Early return, so no database count is needed
         if serviceInstance.maxDeployed == Service.UNLIMITED:
@@ -92,9 +93,9 @@ class UserServiceManager(object):
             raise MaxServicesReachedError('Max number of allowed deployments for service reached')
 
     def __createCacheAtDb(self, deployedServicePublication, cacheLevel):
-        """
+        '''
         Private method to instatiate a cache element at database with default states
-        """
+        '''
         # Checks if maxDeployed has been reached and if so, raises an exception
         self.__checkMaxDeployedReached(deployedServicePublication.deployed_service)
         now = getSqlDatetime()
@@ -104,9 +105,9 @@ class UserServiceManager(object):
                                                               user=None, in_use=False)
 
     def __createAssignedAtDb(self, deployedServicePublication, user):
-        """
+        '''
         Private method to instatiate an assigned element at database with default state
-        """
+        '''
         self.__checkMaxDeployedReached(deployedServicePublication.deployed_service)
         now = getSqlDatetime()
         return deployedServicePublication.userServices.create(cache_level=0, state=State.PREPARING, os_state=State.PREPARING,
@@ -115,20 +116,20 @@ class UserServiceManager(object):
                                                               user=user, in_use=False)
 
     def __createAssignedAtDbForNoPublication(self, deployedService, user):
-        """
+        '''
         __createCacheAtDb and __createAssignedAtDb uses a publication for create the UserService.
         There is cases where deployed services do not have publications (do not need them), so we need this method to create
         an UserService with no publications, and create them from an DeployedService
-        """
+        '''
         self.__checkMaxDeployedReached(deployedService)
         now = getSqlDatetime()
         return deployedService.userServices.create(cache_level=0, state=State.PREPARING, os_state=State.PREPARING,
                                                    state_date=now, creation_date=now, data='', publication=None, user=user, in_use=False)
 
     def createCacheFor(self, deployedServicePublication, cacheLevel):
-        """
+        '''
         Creates a new cache for the deployed service publication at level indicated
-        """
+        '''
         logger.debug('Creating a new cache element at level {0} for publication {1}'.format(cacheLevel, deployedServicePublication))
         cache = self.__createCacheAtDb(deployedServicePublication, cacheLevel)
         ci = cache.getInstance()
@@ -138,9 +139,9 @@ class UserServiceManager(object):
         return cache
 
     def createAssignedFor(self, ds, user):
-        """
+        '''
         Creates a new assigned deployed service for the publication and user indicated
-        """
+        '''
         if ds.service.getType().publicationType is not None:
             dsp = ds.activePublication()
             logger.debug('Creating a new assigned element for user {0} por publication {1}'.format(user, dsp))
@@ -157,25 +158,25 @@ class UserServiceManager(object):
         return assigned
 
     def createAssignable(self, ds, deployed, user):
-        """
+        '''
         Creates an assignable service
-        """
+        '''
         now = getSqlDatetime()
         assignable = ds.userServices.create(cache_level=0, state=State.PREPARING, os_state=State.PREPARING,
                                             state_date=now, creation_date=now, data='', user=user, in_use=False)
         state = deployed.deployForUser(user)
         try:
             UserServiceOpChecker.makeUnique(assignable, deployed, state)
-        except Exception as e:
+        except Exception, e:
             logger.exception("Exception {0}".format(e))
         logger.debug("Assignable: {0}".format(assignable))
         return assignable
 
     def moveToLevel(self, cache, cacheLevel):
-        """
+        '''
         Moves a cache element from one level to another
         @return: cache element
-        """
+        '''
         cache = UserService.objects.get(id=cache.id)
         logger.debug('Moving cache {0} to level {1}'.format(cache, cacheLevel))
         ci = cache.getInstance()
@@ -188,10 +189,10 @@ class UserServiceManager(object):
         UserServiceOpChecker.makeUnique(cache, ci, state)
 
     def cancel(self, uService):
-        """
+        '''
         Cancels a user service creation
         @return: the Uservice canceling
-        """
+        '''
         uService = UserService.objects.get(pk=uService.id)
         logger.debug('Canceling uService {0} creation'.format(uService))
         if uService.isPreparing() is False:
@@ -207,23 +208,18 @@ class UserServiceManager(object):
         return uService
 
     def remove(self, uService):
-        """
+        '''
         Removes a uService element
         @return: the uService removed (marked for removal)
-        """
-        with transaction.atomic():
-            uService = UserService.objects.select_for_update().get(id=uService.id)
-            logger.debug('Removing uService {0}'.format(uService))
-            if uService.isUsable() is False and State.isRemovable(uService.state) is False:
-                raise OperationException(_('Can\'t remove a non active element'))
-            uService.setState(State.REMOVING)
-            logger.debug("***** The state now is {}".format(State.toString(uService.state)))
-            uService.setInUse(False)  # For accounting, ensure that it is not in use right now
-            uService.save()
+        '''
+        uService = UserService.objects.get(id=uService.id)
+        logger.debug('Removing uService {0}'.format(uService))
+        if uService.isUsable() is False and State.isRemovable(uService.state) is False:
+            raise OperationException(_('Can\'t remove a non active element'))
 
         ci = uService.getInstance()
         state = ci.destroy()
-
+        uService.setState(State.REMOVING)
         UserServiceOpChecker.makeUnique(uService, ci, state)
 
     def removeOrCancel(self, uService):
@@ -239,7 +235,7 @@ class UserServiceManager(object):
             dsp.cachedDeployedService.filter(state__in=State.INFO_STATES).delete()
 
     def getExistingAssignationForUser(self, ds, user):
-        existing = ds.assignedUserServices().filter(user=user, state__in=State.VALID_STATES, deployed_service__visible=True)
+        existing = ds.assignedUserServices().filter(user=user, state__in=State.VALID_STATES)
         lenExisting = existing.count()
         if lenExisting > 0:  # Already has 1 assigned
             logger.debug('Found assigned service from {0} to user {1}'.format(ds, user.name))
@@ -319,16 +315,16 @@ class UserServiceManager(object):
         return self.createAssignedFor(ds, user)
 
     def getServicesInStateForProvider(self, provider_id, state):
-        """
+        '''
         Returns the number of services of a service provider in the state indicated
-        """
+        '''
         return UserService.objects.filter(deployed_service__service__provider__id=provider_id, state=state).count()
 
     def canRemoveServiceFromDeployedService(self, ds):
-        """
+        '''
         checks if we can do a "remove" from a deployed service
         serviceIsntance is just a helper, so if we already have unserialized deployedService
-        """
+        '''
         removing = self.getServicesInStateForProvider(ds.service.provider_id, State.REMOVING)
         serviceInstance = ds.service.getInstance()
         if removing >= serviceInstance.parent().getMaxRemovingServices() and serviceInstance.parent().getIgnoreLimits() is False:
@@ -336,9 +332,9 @@ class UserServiceManager(object):
         return True
 
     def canInitiateServiceFromDeployedService(self, ds):
-        """
+        '''
         Checks if we can start a new service
-        """
+        '''
         preparing = self.getServicesInStateForProvider(ds.service.provider_id, State.PREPARING)
         serviceInstance = ds.service.getInstance()
         if preparing >= serviceInstance.parent().getMaxPreparingServices() and serviceInstance.parent().getIgnoreLimits() is False:
@@ -365,26 +361,18 @@ class UserServiceManager(object):
         return False
 
     def notifyPreconnect(self, uService, userName, protocol):
-
-        proxy = uService.deployed_service.proxy
-
         url = uService.getCommsUrl()
         if url is None:
             logger.debug('No notification is made because agent does not supports notifications')
             return
-
         url += '/preConnect'
 
         try:
-            data = {'user': userName, 'protocol': protocol}
-            if proxy is not None:
-                r = proxy.doProxyRequest(url=url, data=data, timeout=2)
-            else:
-                r = requests.post(url,
-                                  data=json.dumps(data),
-                                  headers={'content-type': 'application/json'},
-                                  verify=False,
-                                  timeout=2)
+            r = requests.post(url,
+                              data=json.dumps({'user': userName, 'protocol': protocol}),
+                              headers={'content-type': 'application/json'},
+                              verify=False,
+                              timeout=2)
             r = json.loads(r.content)
             logger.debug('Sent pre connection to client using {}: {}'.format(url, r))
             # In fact we ignore result right now
@@ -393,27 +381,19 @@ class UserServiceManager(object):
 
     def checkUuid(self, uService):
 
-        proxy = uService.deployed_service.proxy
-
         url = uService.getCommsUrl()
 
         if url is None:
             logger.debug('No uuid to retrieve because agent does not supports notifications')
             return True  # UUid is valid because it is not supported checking it
 
-        version = uService.getProperty('actor_version', '')
-        # Just for 2.0 or newer, previous actors will not support this method.
-        # Also externally supported agents will not support this method (as OpenGnsys)
-        if '-' in version or version < '2.0.0':
+        if uService.getProperty('actor_version', '') < '2.0.0':  # Just for 2.0 or newer, previous actors will not support this method
             return True
 
         url += '/uuid'
 
         try:
-            if proxy is not None:
-                r = proxy.doProxyRequest(url=url, timeout=5)
-            else:
-                r = requests.get(url, verify=False, timeout=5)
+            r = requests.get(url, verify=False, timeout=5)
             uuid = json.loads(r.content)
             if uuid != uService.uuid:
                 logger.info('The requested machine has uuid {} and the expected was {}'.format(uuid, uService.uuid))
@@ -428,11 +408,9 @@ class UserServiceManager(object):
         return True
 
     def sendScript(self, uService, script):
-        """
+        '''
         If allowed, send script to user service
-        """
-        proxy = uService.deployed_service.proxy
-
+        '''
         # logger.debug('Senging script: {}'.format(script))
         url = uService.getCommsUrl()
         if url is None:
@@ -441,17 +419,7 @@ class UserServiceManager(object):
         url += '/script'
 
         try:
-            data = {'script': script}
-            if proxy is not None:
-                r = proxy.doProxyRequest(url=url, data=data, timeout=5)
-            else:
-                r = requests.post(
-                    url,
-                    data=json.dumps(data),
-                    headers={'content-type': 'application/json'},
-                    verify=False,
-                    timeout=5
-                )
+            r = requests.post(url, data=json.dumps({'script': script}), headers={'content-type': 'application/json'}, verify=False, timeout=5)
             r = json.loads(r.content)
             logger.debug('Sent script to client using {}: {}'.format(url, r))
             # In fact we ignore result right now
@@ -460,22 +428,38 @@ class UserServiceManager(object):
 
         # All done
 
+    def requestLogoff(self, uService):
+        '''
+        Ask client to logoff user
+        '''
+        url = uService.getCommsUrl()
+        if url is None:
+            logger.error('Can\'t connect with actor (no actor or legacy actor)')
+            return
+        url += '/logoff'
+
+        try:
+            r = requests.post(url, data=json.dumps({}), headers={'content-type': 'application/json'}, verify=False, timeout=4)
+            r = json.loads(r.content)
+            logger.debug('Sent logoff to client using {}: {}'.format(url, r))
+            # In fact we ignore result right now
+        except Exception as e:
+            # TODO: Right now, this is an "experimental" feature, not supported on Apps (but will)
+            pass
+            # logger.info('Logoff requested but service was not listening: {}'.format(e, url))
+
+        # All done
+
     def checkForRemoval(self, uService):
-        """
+        '''
         This method is used by UserService when a request for setInUse(False) is made
         This checks that the service can continue existing or not
-        """
-        remove = False
+        '''
         # uService = UserService.objects.get(id=uService.id)
-        with transaction.atomic():
-            uService = UserService.objects.select_for_update().get(id=uService.id)
-            if uService.publication is None:
-                return
-            if uService.publication.id != uService.deployed_service.activePublication().id:
-                logger.debug('Old revision of user service, marking as removable: {0}'.format(uService))
-                remove = True
-
-        if remove:
+        if uService.publication is None:
+            return
+        if uService.publication.id != uService.deployed_service.activePublication().id:
+            logger.debug('Old revision of user service, marking as removable: {0}'.format(uService))
             uService.remove()
 
     def notifyReadyFromOsManager(self, uService, data):
@@ -522,9 +506,9 @@ class UserServiceManager(object):
         return userService
 
     def getService(self, user, srcIp, idService, idTransport, doTest=True):
-        """
+        '''
         Get service info from
-        """
+        '''
         userService = self.locateUserService(user, idService, create=True)
 
         if userService.isInMaintenance() is True:
@@ -554,12 +538,10 @@ class UserServiceManager(object):
 
         if user is not None:
             userName = user.name
-        else:
-            userName = 'unknown'
 
         if doTest is False:
             # traceLogger.info('GOT service "{}" for user "{}" with transport "{}" (NOT TESTED)'.format(userService.name, userName, trans.name))
-            return None, userService, None, trans, None
+            return (None, userService, None, trans, None)
 
         serviceNotReadyCode = 0x0001
         ip = 'unknown'
@@ -570,6 +552,7 @@ class UserServiceManager(object):
             # If ready, show transport for this service, if also ready ofc
             iads = userService.getInstance()
             ip = iads.getIp()
+            userService.logIP(ip)  # Update known ip
 
             if self.checkUuid(userService) is False:  # Machine is not what is expected
                 serviceNotReadyCode = 0x0004
@@ -585,7 +568,7 @@ class UserServiceManager(object):
                         log.doLog(userService, log.INFO, "User service ready", log.WEB)
                         self.notifyPreconnect(userService, itrans.processedUser(userService, user), itrans.protocol)
                         traceLogger.info('READY on service "{}" for user "{}" with transport "{}" (ip:{})'.format(userService.name, userName, trans.name, ip))
-                        return ip, userService, iads, trans, itrans
+                        return (ip, userService, iads, trans, itrans)
                     else:
                         message = itrans.getCustomAvailableErrorMsg(userService, ip)
                         log.doLog(userService, log.WARN, message, log.TRANSPORT)

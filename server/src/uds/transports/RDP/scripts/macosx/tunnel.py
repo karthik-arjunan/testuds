@@ -30,7 +30,7 @@ def onExit():
         [
             'security',
              'delete-generic-password',
-             '-a', sp['usernameWithDomain'],  # @UndefinedVariable
+             '-a', '{m.username}',
              '-s', 'Remote Desktop Connection 2 Password for 127.0.0.1',
         ]
     )
@@ -41,14 +41,15 @@ if executable is None:
 <ul>
     <li>
         <p><b>CoRD</b> (A bit unstable from 10.7 onwards)</p>
-        <p>You can get it from <a href="{}static/other/CoRD.pkg">this link</a></p>
+        <p>You can get it from <a href="{m.this_server}static/other/CoRD.pkg">this link</a></p>
     </li>
 </ul>
 <p>If both apps are installed, Remote Desktop Connection will be used as first option</p>
-'''.format(sp['this_server']))  # @UndefinedVariable
 
-forwardThread, port = forward(sp['tunHost'], sp['tunPort'], sp['tunUser'], sp['tunPass'], sp['ip'], 3389, sp['tunWait'])  # @UndefinedVariable
-address = '127.0.0.1:{}'.format(port)
+''')
+
+
+forwardThread, port = forward('{m.tunHost}', '{m.tunPort}', '{m.tunUser}', '{m.tunPass}', '{m.ip}', 3389, waitTime={m.tunWait})  # @UndefinedVariable
 
 if forwardThread.status == 2:
     raise Exception('Unable to open tunnel')
@@ -62,16 +63,14 @@ else:
 
     if executable == msrdc:
         try:
-            filename = tools.saveTempFile(sp['as_file'].format(address=address))  # @UndefinedVariable
-            tools.addFileToUnlink(filename)
-            if sp['password'] != '':  # @UndefinedVariable
+            if {m.hasCredentials}:  # @UndefinedVariable
                 subprocess.call(
                     [
                         'security',
                         'add-generic-password',
-                        '-w', sp['password'],  # @UndefinedVariable
+                        '-w', '{m.password}',
                         '-U',
-                        '-a', sp['usernameWithDomain'],  # @UndefinedVariable
+                        '-a', '{m.username}',
                         '-s', 'Remote Desktop Connection 2 Password for 127.0.0.1'.format(port),
                         '-T', '/Applications/Remote Desktop Connection.app',
                     ]
@@ -84,6 +83,31 @@ else:
         except Exception as e:
             raise
     else:  # CoRD
-        url = sp['as_cord_url'].format(address=address)  # @UndefinedVariable
+        url = 'rdp://'
+        username, domain = '{m.username}', '{m.domain}'
+
+        if username != '':
+            url += urllib.quote(username)
+            if '{m.password}' != '':
+                url += ':' + urllib.quote('{m.password}')
+            url += '@'
+        url += '127.0.0.1:{{}}/'.format(port)
+        if domain != '':
+            url += domain
+
+        url += '?screenDepth###{m.r.bpp}'
+
+        if {m.r.fullScreen}:  # @UndefinedVariable
+            url += '&fullscreen###true'
+        else:
+            url += 'screenWidth###{m.r.width}&screenHeight###{m.r.height}'
+
+        # url += '&forwardAudio###' + '01'[{m.r.redirectAudio}]  # @UndefinedVariable
+
+        if {m.r.redirectDrives}:  # @UndefinedVariable
+            url += '&forwardDisks###true'
+
+        if {m.r.redirectPrinters}:  # @UndefinedVariable
+            url += '&forwardPrinters###true'
 
         tools.addTaskToWait(subprocess.Popen(['open', url]))

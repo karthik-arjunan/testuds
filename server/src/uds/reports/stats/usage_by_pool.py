@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -39,12 +39,13 @@ from uds.core.reports.tools import UDSGeraldoReport
 from uds.core.util.stats import events
 
 
-import six
+import StringIO
 import csv
 
 
 from .base import StatsReport
 
+from uds.core.util import tools
 from uds.models import ServicePool
 from geraldo.generators.pdf import PDFGenerator
 from geraldo import ReportBand, ObjectValue, Label
@@ -160,7 +161,7 @@ class UsageByPool(StatsReport):
     def generate(self):
         items, poolName = self.getData()
 
-        output = six.StringIO()
+        output = StringIO.StringIO()
 
         report = UsersReport(queryset=items)
         report.title = _('Users usage list for {}').format(poolName)

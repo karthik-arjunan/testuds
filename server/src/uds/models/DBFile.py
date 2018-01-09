@@ -28,15 +28,18 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 
 from __future__ import unicode_literals
+
+__updated__ = '2017-11-15'
 
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from uds.models.UUIDModel import UUIDModel
+from uds.core.util import encoders
 
 import logging
 import six
@@ -55,12 +58,21 @@ class DBFile(UUIDModel):
 
     @property
     def data(self):
-        return self.content.decode('base64').decode('zip')
+        try:
+            return encoders.decode(encoders.decode(self.content, 'base64'), 'zip')
+        except Exception:
+            logger.error('DBFile {} has errors and cannot be used'.format(self.name))
+            try:
+                self.delete()  # Autodelete, invalid...
+            except:
+                logger.error('Could not even delete {}!!'.format(self.name))
+
+            return ''
 
     @data.setter
     def data(self, value):
         self.size = len(value)
-        self.content = value.encode('zip').encode('base64')
+        self.content = encoders.encode(encoders.encode(value, 'zip'), 'base64')
 
     def __str__(self):
         return 'File: {} {} {} {}'.format(self.name, self.size, self.created, self.modified)

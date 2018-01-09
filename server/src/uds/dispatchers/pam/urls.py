@@ -27,14 +27,13 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
-from django.conf.urls import url
-from .views import pam
+from django.conf.urls import patterns
 
-urlpatterns = [
-    url(r'^pam$', pam, name='dispatcher.pam'),
-]
+urlpatterns = patterns(__package__,
+     (r'^pam$', 'views.pam'),
+    )

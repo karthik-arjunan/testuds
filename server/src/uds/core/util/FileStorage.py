@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 # pylint: disable=no-name-in-module,import-error, maybe-no-member
 from __future__ import unicode_literals
 
@@ -50,6 +50,7 @@ logger = logging.getLogger(__name__)
 
 
 class FileStorage(Storage):
+
     def __init__(self, *args, **kwargs):
         self._base_url = getattr(settings, 'FILE_STORAGE', '/files')
         if self._base_url[-1] != '/':
@@ -60,6 +61,7 @@ class FileStorage(Storage):
         try:
             cache = caches[cacheName]
         except:
+            logger.info('No cache for FileStorage configured.')
             cache = None
 
         self.cache = cache
@@ -71,18 +73,17 @@ class FileStorage(Storage):
 
         self.cache._cache.flush_all()  # On start, ensures that cache is empty to avoid surprises
 
-        # noinspection PyArgumentList
         Storage.__init__(self, *args, **kwargs)
 
     def get_valid_name(self, name):
         return name.replace('\\', os.path.sep)
 
     def _getKey(self, name):
-        """
+        '''
             We have only a few files on db, an we are running on a 64 bits system
             memcached does not allow keys bigger than 250 chars, so we are going to use hash() to
             get a key for this
-        """
+        '''
         return 'fstor' + six.text_type(hash(self.get_valid_name(name)))
 
     def _dbFileForReadOnly(self, name):
@@ -118,7 +119,6 @@ class FileStorage(Storage):
         if self.cache is None:
             return
         self.cache.delete(self._getKey(name))
-
 
     def _open(self, name, mode='rb'):
         f = six.BytesIO(self._dbFileForReadOnly(name).data)
@@ -161,7 +161,7 @@ class FileStorage(Storage):
     def exists(self, name):
         logger.debug('Called exists for {}'.format(name))
         try:
-            _ = self._dbFileForReadOnly(name).uuid # Tries to access uuid
+            self._dbFileForReadOnly(name).uuid
             return True
         except DBFile.DoesNotExist:
             return False
@@ -173,7 +173,9 @@ class FileStorage(Storage):
         except DBFile.DoesNotExist:
             return None
 
+
 class CompressorFileStorage(FileStorage):
+
     def __init__(self, *args, **kwargs):
         FileStorage.__init__(self, *args, **dict(kwargs, owner='compressor'))
 

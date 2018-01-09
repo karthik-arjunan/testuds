@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 
 from django.utils.translation import ugettext_noop as _
 from uds.core.ui.UserInterface import gui
@@ -41,24 +41,23 @@ from uds.models import TicketStore
 from .BaseX2GOTransport import BaseX2GOTransport
 from . import x2gofile
 
-
 import logging
 import random
 import string
 
-__updated__ = '2017-01-30'
+__updated__ = '2017-12-20'
 
 logger = logging.getLogger(__name__)
 
 
 class TX2GOTransport(BaseX2GOTransport):
-    """
-    Provides access via SPICE to service.
+    '''
+    Provides access via X2GO to service.
     This transport can use an domain. If username processed by authenticator contains '@', it will split it and left-@-part will be username, and right password
-    """
-    typeName = _('X2Go Transport Experimental (tunneled)')
+    '''
+    typeName = _('X2Go')
     typeType = 'TX2GOTransport'
-    typeDescription = _('X2Go Transport for tunneled connection (EXPERIMENTAL)')
+    typeDescription = _('X2Go access (Experimental). Tunneled connection.')
     group = TUNNELED_GROUP
 
     tunnelServer = gui.TextField(label=_('Tunnel server'), order=1, tooltip=_('IP or Hostname of tunnel server sent to client device ("public" ip) and port. (use HOST:PORT format)'), tab=gui.TUNNEL_TAB)
@@ -66,6 +65,7 @@ class TX2GOTransport(BaseX2GOTransport):
     fixedName = BaseX2GOTransport.fixedName
     # fullScreen = BaseX2GOTransport.fullScreen
     desktopType = BaseX2GOTransport.desktopType
+    customCmd = BaseX2GOTransport.customCmd
     sound = BaseX2GOTransport.sound
     exports = BaseX2GOTransport.exports
     speed = BaseX2GOTransport.speed
@@ -74,7 +74,6 @@ class TX2GOTransport(BaseX2GOTransport):
     keyboardLayout = BaseX2GOTransport.keyboardLayout
     pack = BaseX2GOTransport.pack
     quality = BaseX2GOTransport.quality
-
 
     def initialize(self, values):
         if values is not None:
@@ -91,7 +90,9 @@ class TX2GOTransport(BaseX2GOTransport):
 
         width, height = CommonPrefs.getWidthHeight(prefs)
 
-        logger.debug('')
+        desktop = self.desktopType.value
+        if desktop == "UDSVAPP":
+            desktop = "/usr/bin/udsvapp " + self.customCmd.value
 
         xf = x2gofile.getTemplate(
             speed=self.speed.value,
@@ -99,7 +100,7 @@ class TX2GOTransport(BaseX2GOTransport):
             quality=self.quality.value,
             sound=self.sound.isTrue(),
             soundSystem=self.sound.value,
-            windowManager=self.desktopType.value,
+            windowManager=desktop,
             exports=self.exports.isTrue(),
             width=width,
             height=height,
@@ -140,6 +141,6 @@ class TX2GOTransport(BaseX2GOTransport):
         }.get(m.os)
 
         if os is None:
-            return super(self.__class__, self).getUDSTransportScript(userService, transport, ip, os, user, password, request)
+            return super(BaseX2GOTransport, self).getUDSTransportScript(self, userService, transport, ip, os, user, password, request)
 
         return self.getScript('scripts/{}/tunnel.py'.format(os)).format(m=m)

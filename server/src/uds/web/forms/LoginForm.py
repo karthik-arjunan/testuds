@@ -27,17 +27,16 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _, ugettext
 from django import forms
 from django.utils.safestring import mark_safe
+from django.forms.forms import NON_FIELD_ERRORS
 from uds.models import Authenticator
-
-import six
 import logging
 
 logger = logging.getLogger(__name__)
@@ -49,7 +48,7 @@ class CustomSelect(forms.Select):
 
     bootstrap = False
 
-    def render(self, name, value, attrs=None, **kwargs):
+    def render(self, name, value, attrs=None):
         if len(self.choices) < 2:
             visible = ' style="display: none;"'
         else:
@@ -58,8 +57,7 @@ class CustomSelect(forms.Select):
         for choice in self.choices:
             res += '<option value="{0}">{1}</option>'.format(choice[0], choice[1])
         res += '</select>'
-        return mark_safe('<div class="form-group"{0}><label>'.format(visible) + six.text_type(_('authenticator')) + '</label>' + res + '</div>')
-
+        return mark_safe('<div class="form-group"{0}><label>'.format(visible) + unicode(_('authenticator')) + '</label>' + res + '</div>')
 
 class LoginForm(forms.Form):
     user = forms.CharField(label=_('Username'), max_length=64, widget=forms.TextInput())
@@ -68,6 +66,7 @@ class LoginForm(forms.Form):
     standard = forms.CharField(widget=forms.HiddenInput(), required=False)
     nonStandard = forms.CharField(widget=forms.HiddenInput(), required=False)
     logouturl = forms.CharField(widget=forms.HiddenInput(), required=False)
+
 
     def __init__(self, *args, **kwargs):
         # If an specified login is passed in, retrieve it & remove it from kwargs dict

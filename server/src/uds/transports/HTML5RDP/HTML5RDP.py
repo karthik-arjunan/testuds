@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 
 from __future__ import unicode_literals
 
@@ -42,6 +42,7 @@ from uds.core.transports.BaseTransport import Transport
 from uds.core.transports.BaseTransport import TUNNELED_GROUP
 
 from uds.core.transports import protocols
+from uds.core.util import connection
 from uds.core.util import OsDetector
 from uds.models import TicketStore
 
@@ -53,13 +54,13 @@ READY_CACHE_TIMEOUT = 30
 
 
 class HTML5RDPTransport(Transport):
-    """
+    '''
     Provides access via RDP to service.
     This transport can use an domain. If username processed by authenticator contains '@', it will split it and left-@-part will be username, and right password
-    """
-    typeName = _('HTML5 RDP Transport')
+    '''
+    typeName = _('HTML5 RDP')
     typeType = 'HTML5RDPTransport'
-    typeDescription = _('RDP Transport using HTML5 client')
+    typeDescription = _('RDP protocol using HTML5 client')
     iconFile = 'html5.png'
 
     ownLink = True
@@ -108,6 +109,16 @@ class HTML5RDPTransport(Transport):
         tab=gui.PARAMETERS_TAB
     )
 
+    ticketValidity = gui.NumericField(
+        length=3,
+        label=_('Ticket Validity'),
+        defvalue='60',
+        order=90,
+        tooltip=_('Allowed time, in seconds, for HTML5 client to reload data from UDS Broker. The default value of 60 is recommended.'),
+        required=True,
+        minValue=60,
+        tab=gui.ADVANCED_TAB
+    )
 
     def initialize(self, values):
         if values is None:
@@ -120,15 +131,15 @@ class HTML5RDPTransport(Transport):
 
     # Same check as normal RDP transport
     def isAvailableFor(self, userService, ip):
-        """
+        '''
         Checks if the transport is available for the requested destination ip
         Override this in yours transports
-        """
+        '''
         logger.debug('Checking availability for {0}'.format(ip))
         ready = self.cache.get(ip)
         if ready is None:
             # Check again for readyness
-            if self.testServer(userService, ip, '3389') is True:
+            if connection.testServer(ip, '3389') is True:
                 self.cache.put(ip, 'Y', READY_CACHE_TIMEOUT)
                 return True
             else:
@@ -191,11 +202,10 @@ class HTML5RDPTransport(Transport):
         }
 
         if self.enableFileSharing.isTrue():
-           params['enable-drive'] = 'true'
+            params['enable-drive'] = 'true'
 
         if self.serverLayout.value != '-':
             params['server-layout'] = self.serverLayout.value
-
 
         if self.enableAudio.isTrue() is False:
             params['disable-audio'] = 'true'
@@ -214,6 +224,6 @@ class HTML5RDPTransport(Transport):
 
         logger.debug('RDP Params: {0}'.format(params))
 
-        ticket = TicketStore.create(params)
+        ticket = TicketStore.create(params, validity=self.ticketValidity.num())
 
         return HttpResponseRedirect("{}/transport/?{}&{}".format(self.guacamoleServer.value, ticket, request.build_absolute_uri(reverse('Index'))))

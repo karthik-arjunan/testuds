@@ -28,10 +28,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-"""
+'''
 
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 # from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_noop as _
@@ -39,7 +39,6 @@ from uds.core.ui.UserInterface import gui
 from uds.core import auths
 from uds.core.auths.Exceptions import AuthenticatorException
 
-import six
 import ldap
 import ldap.filter
 import re
@@ -125,9 +124,9 @@ class RegexLdap(auths.Authenticator):
         self._connection = None
 
     def __validateField(self, field, fieldLabel):
-        """
+        '''
         Validates the multi line fields refering to attributes
-        """
+        '''
         for line in field.splitlines():
             if line.find('=') != -1:
                 _, pattern = line.split('=')[0:2]
@@ -155,7 +154,7 @@ class RegexLdap(auths.Authenticator):
         for line in field.splitlines():
             equalPos = line.find('=')
             if equalPos == -1:
-                line += '=(.*)'
+                line = line + '=(.*)'
                 equalPos = line.find('=')
             attr, pattern = (line[:equalPos], line[equalPos + 1:])
             attr = attr.lower()
@@ -251,12 +250,13 @@ class RegexLdap(auths.Authenticator):
                     password = self._password
 
                 l.simple_bind_s(who=username, cred=password)
-            except ldap.LDAPError as e:
+            except ldap.LDAPError, e:
                 str_ = _('Ldap connection error: ')
-                if isinstance(e.message, dict):
-                    str_ += ', '.join((e.message.get('info', ''), e.message.get('desc')))
+                if type(e.message) == dict:
+                    str_ += 'info' in e.message and e.message['info'] + ',' or ''
+                    str_ += 'desc' in e.message and e.message['desc'] or ''
                 else:
-                    str_ += six.text_type(e)
+                    str_ += str(e)
                 raise Exception(str_)
             if cache is True:
                 self._connection = l
@@ -276,7 +276,7 @@ class RegexLdap(auths.Authenticator):
                                    filterstr=filter_, attrlist=attrlist, sizelimit=LDAP_RESULT_LIMIT)[0]
 
             usr = dict((k, '') for k in attrlist)
-            dct = {k.lower(): v for k, v in six.iteritems(res[1])}
+            dct = {k.lower(): v for k, v in res[1].iteritems()}
             usr.update(dct)
             usr.update({'dn': res[0], '_id': username})
 
@@ -326,7 +326,7 @@ class RegexLdap(auths.Authenticator):
         # return ' '.join([ (type(usr.get(id_, '')) is list and ' '.join(( str(k) for k in usr.get(id_, ''))) or str(usr.get(id_, ''))) for id_ in self._userNameAttr.split(',') ]).strip()
 
     def authenticate(self, username, credentials, groupsManager):
-        """
+        '''
         Must authenticate the user.
         We can have to different situations here:
            1.- The authenticator is external source, what means that users may be unknown to system before callig this
@@ -334,7 +334,7 @@ class RegexLdap(auths.Authenticator):
         We receive the username, the credentials used (normally password, but can be a public key or something related to pk) and a group manager.
         The group manager is responsible for letting know the authenticator which groups we currently has active.
         @see: uds.core.auths.GroupsManager
-        """
+        '''
         try:
             # Locate the user at LDAP
             usr = self.__getUser(username)
@@ -353,14 +353,14 @@ class RegexLdap(auths.Authenticator):
             return False
 
     def createUser(self, usrData):
-        """
+        '''
         We must override this method in authenticators not based on external sources (i.e. database users, text file users, etc..)
         External sources already has the user  cause they are managed externally, so, it can at most test if the users exists on external source
         before accepting it.
         Groups are only used in case of internal users (non external sources) that must know to witch groups this user belongs to
         @param usrData: Contains data received from user directly, that is, a dictionary with at least: name, real_name, comments, state & password
         @return:  Raises an exception (AuthException) it things didn't went fine
-        """
+        '''
         res = self.__getUser(usrData['name'])
         if res is None:
             raise AuthenticatorException(_('Username not found'))
@@ -368,40 +368,40 @@ class RegexLdap(auths.Authenticator):
         usrData['real_name'] = self.__getUserRealName(res)
 
     def getRealName(self, username):
-        """
+        '''
         Tries to get the real name of an user
-        """
+        '''
         res = self.__getUser(username)
         if res is None:
             return username
         return self.__getUserRealName(res)
 
     def modifyUser(self, usrData):
-        """
+        '''
         We must override this method in authenticators not based on external sources (i.e. database users, text file users, etc..)
         Modify user has no reason on external sources, so it will never be used (probably)
         Groups are only used in case of internal users (non external sources) that must know to witch groups this user belongs to
         @param usrData: Contains data received from user directly, that is, a dictionary with at least: name, realName, comments, state & password
         @return:  Raises an exception it things doesn't go fine
-        """
+        '''
         return self.createUser(usrData)
 
     def createGroup(self, groupData):
-        """
+        '''
         We must override this method in authenticators not based on external sources (i.e. database users, text file users, etc..)
         External sources already has its own groups and, at most, it can check if it exists on external source before accepting it
         Groups are only used in case of internal users (non external sources) that must know to witch groups this user belongs to
         @params groupData: a dict that has, at least, name, comments and active
         @return:  Raises an exception it things doesn't go fine
-        """
+        '''
         pass
 
     def getGroups(self, username, groupsManager):
-        """
+        '''
         Looks for the real groups to which the specified user belongs
         Updates groups manager with valid groups
         Remember to override it in derived authentication if needed (external auths will need this, for internal authenticators this is never used)
-        """
+        '''
         user = self.__getUser(username)
         if user is None:
             raise AuthenticatorException(_('Username not found'))
@@ -414,7 +414,7 @@ class RegexLdap(auths.Authenticator):
             res = []
             for r in con.search_ext_s(base=self._ldapBase, scope=ldap.SCOPE_SUBTREE, filterstr='(&(objectClass=%s)(%s=%s*))' % (self._userClass, self._userIdAttr, pattern), sizelimit=LDAP_RESULT_LIMIT):
                 if r[0] is not None:  # Must have a dn, we do not accept references to other
-                    dct = {k.lower(): v for k, v in six.iteritems(r[1])}
+                    dct = {k.lower(): v for k, v in r[1].iteritems()}
                     logger.debug('R: {0}'.format(dct))
                     usrId = dct.get(self._userIdAttr.lower(), '')
                     usrId = type(usrId) == list and usrId[0] or usrId
@@ -433,14 +433,14 @@ class RegexLdap(auths.Authenticator):
         try:
             auth = RegexLdap(None, env, data)
             return auth.testConnection()
-        except Exception as e:
+        except Exception, e:
             logger.error("Exception found testing Simple LDAP auth {0}: {1}".format(e.__class__, e))
             return [False, "Error testing connection"]
 
     def testConnection(self):
         try:
             con = self.__connection()
-        except Exception as e:
+        except Exception, e:
             return [False, str(e)]
 
         try:
@@ -452,7 +452,7 @@ class RegexLdap(auths.Authenticator):
             if len(con.search_ext_s(base=self._ldapBase, scope=ldap.SCOPE_SUBTREE, filterstr='(objectClass=%s)' % self._userClass, sizelimit=1)) == 1:
                 raise Exception()
             return [False, _('Ldap user class seems to be incorrect (no user found by that class)')]
-        except Exception as e:
+        except Exception, e:
             # If found 1 or more, all right
             pass
 

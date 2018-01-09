@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 # pylint: disable=protected-access
 from __future__ import unicode_literals
 
@@ -59,7 +59,7 @@ def getPidFile():
 buffering = int(six.PY3)
 def become_daemon(our_home_dir='.', out_log='/dev/null',
                   err_log='/dev/null', umask=0o022):
-    """Robustly turn into a UNIX daemon, running in our_home_dir."""
+    "Robustly turn into a UNIX daemon, running in our_home_dir."
     # First fork
     try:
         if os.fork() > 0:
@@ -94,17 +94,18 @@ class Command(BaseCommand):
     args = "None"
     help = "Executes the task manager as a daemon. No parameter show current status of task manager"
 
-    def add_arguments(self, parser):
-        parser.add_argument('--start',
+    option_list = BaseCommand.option_list + (
+        make_option('--start',
                     action='store_true',
                     dest='start',
                     default=False,
-                    help='Starts a new daemon')
-        parser.add_argument('--stop',
+                    help='Starts a new daemon'),
+        make_option('--stop',
                     action='store_true',
                     dest='stop',
                     default=False,
-                    help='Stop any running daemon')
+                    help='Stop any running daemon'),
+    )
 
     def handle(self, *args, **options):
         logger.info("Running task manager command")
