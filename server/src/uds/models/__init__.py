@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 
 from __future__ import unicode_literals
 import logging
@@ -102,13 +102,20 @@ from .CalendarRule import CalendarRule
 from .CalendarAccess import CalendarAccess
 from .CalendarAction import CalendarAction
 
+# Accounting
+from .Account import Account
+from .AccountUsage import AccountUsage
+
+# Proxies
+from .Proxy import Proxy
+
 # Tagging
 from .Tag import Tag
 
 # Utility
 from .DBFile import DBFile
 
-__updated__ = '2016-04-05'
+__updated__ = '2017-01-20'
 
 
 logger = logging.getLogger(__name__)

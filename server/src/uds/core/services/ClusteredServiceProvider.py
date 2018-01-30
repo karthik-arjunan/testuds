@@ -27,14 +27,15 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from uds.core.services.BaseServiceProvider import ServiceProvider
 from uds.core.util.Config import GlobalConfig
 
+import six
 import logging
 
 __updated__ = '2016-02-26'
@@ -45,12 +46,12 @@ HEIGHT_OF_CPU = 5
 
 
 class ClusteredServiceProvider(ServiceProvider):
-    '''
+    """
     This class represents a Clustered Service Provider, that is, a Service provider that forms a Cluster and needs
     "organization".
 
     It adds the needed methods to keep cluster "in good shape"
-    '''
+    """
     typeName = 'Base Clustered Provider'
     typeType = 'BaseClusteredServiceProvider'
     typeDescription = 'Base Clustered Service Provider'
@@ -69,13 +70,13 @@ class ClusteredServiceProvider(ServiceProvider):
 
     # This method do not need to be overriden, but can be if it is needed (taking care ofc :-) )
     def getClusterOverloadedNodes(self):
-        '''
+        """
         Checks if a migration is desired, based on nodes load
 
         This method will return:
             Array of NodeName, preferably sorted by priority, with nodes that are "Overloaded".
             This array, ofc, can be "empty"
-        '''
+        """
         if self.balanceNodes is False:
             return []
 
@@ -85,7 +86,7 @@ class ClusteredServiceProvider(ServiceProvider):
         maxCpuLoad = GlobalConfig.CLUSTER_MIGRATE_CPULOAD.getInt(True)
         minFreeMemPercent = GlobalConfig.CLUSTER_MIGRATE_MEMORYLOAD.getInt(True)
 
-        for nodeName, nodeStats in nodesStats.iteritems():
+        for nodeName, nodeStats in six.iteritems(nodesStats):
             if nodeStats['freeMemory'] is None or nodeStats['totalMemory'] is None or nodeStats['cpuLoad'] is None:
                 continue
             freeMemPercent = (nodeStats['freeMemory'] * 100) / nodeStats['totalMemory']
@@ -105,7 +106,7 @@ class ClusteredServiceProvider(ServiceProvider):
 
     # Same as before, this method do not need to be overriden,
     def getClusterUnderloadedNodes(self):
-        '''
+        """
         Checks which nodes of the cluster are elegible for destination of machines
         This method is very similar to  getClusterOverloadedNodes, but this returns
         a list of nodes where we can migrate the services.
@@ -113,7 +114,7 @@ class ClusteredServiceProvider(ServiceProvider):
         This method will return:
             Array of NodeName, preferably sorted by priority, with nodes that are "Underloaded"
             This array, ofc, can be "empty"
-        '''
+        """
         if self.balanceNodes is False:
             return []
 
@@ -123,7 +124,7 @@ class ClusteredServiceProvider(ServiceProvider):
         maxCpuLoad = GlobalConfig.CLUSTER_ELEGIBLE_CPULOAD.getInt(True)
         minFreeMemPercent = GlobalConfig.CLUSTER_ELEGIBLE_MEMORYLOAD.getInt(True)
 
-        for nodeName, nodeStats in nodesStats.iteritems():
+        for nodeName, nodeStats in six.iteritems(nodesStats):
             if nodeStats['freeMemory'] is None or nodeStats['totalMemory'] is None or nodeStats['cpuLoad'] is None:
                 continue
             freeMemPercent = (nodeStats['freeMemory'] * 100) / nodeStats['totalMemory']
@@ -144,7 +145,7 @@ class ClusteredServiceProvider(ServiceProvider):
     def getClusterBestNodeForDeploy(self):
 
         nodesStats = self.clusterStats()
-        nodes = [name for name in nodesStats.iterkeys()]
+        nodes = [name for name in six.iteritems(nodesStats)]
 
         def getNodeStatsKey(name):
             ns = nodesStats[name]
@@ -158,7 +159,7 @@ class ClusteredServiceProvider(ServiceProvider):
         return sorted(nodes, key=getNodeStatsKey)
 
     def getServicesForBalancing(self, clusterNode):
-        '''
+        """
         Select machines from the specified nodes that can be "migrated"
         so we can balance nodes.
 
@@ -173,7 +174,7 @@ class ClusteredServiceProvider(ServiceProvider):
         This method will return an array of services, db Objects, that are on the specified nodes
         and are "ready" for migration. The calling method MUST lock for update the record and
         update the state so it's not assigned while in migration (balancing operation)
-        '''
+        """
         from uds.models import UserService
         from uds.core.util.State import State
 
@@ -192,15 +193,16 @@ class ClusteredServiceProvider(ServiceProvider):
         return res
 
     def locateClusterService(self, serviceInstance):
-        '''
+        """
         This method tries to locate a service instance on every node
         To make this, tries to connect to all nodes and look for service.
 
         This method can be a bit "slow", because it has to ask  so we will probably redesign it using ThreadPool
-        '''
+        """
         from uds.core.util.ThreadPool import ThreadPool
 
         node = None
+        
         def isInNode(n):
             if serviceInstance.ensureExistsOnNode(n) is True:
                 node = n
@@ -215,7 +217,7 @@ class ClusteredServiceProvider(ServiceProvider):
 
     # This methods must be overriden
     def getClusterNodes(self):
-        '''
+        """
         This method must be overriden.
 
         returns the nodes of this clusters as an array dictionaries, with the id of nodes and the is the node is "active".
@@ -224,11 +226,11 @@ class ClusteredServiceProvider(ServiceProvider):
         This ids must be recognized later by nodes methods of ClusteredServiceProvider
         Example:
             [ { 'id': 'node1', 'active': True }, { 'id': 'node2', 'active': False }]
-        '''
+        """
         return []
 
     def getClusterNodeLoad(self, nodeId):
-        '''
+        """
         This method must be overriden
 
         Returns the load of a node of the cluster, as a dictionary, with 3 informations used right now:
@@ -241,5 +243,5 @@ class ClusteredServiceProvider(ServiceProvider):
             * freeMemory: Unused memory (or usable memory) of node, expressed in Kb (Integer)
             * totalMemory: Total memory of node, expressed in Kb (Integer)
 
-        '''
+        """
         return {'cpuLoad': None, 'freeMemory': None, 'totalMemory': None}  # We could have used return {}, but i prefer this "sample template"

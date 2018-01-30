@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 
 # pylint: disable=too-many-public-methods
 
@@ -45,8 +45,7 @@ from uds.core.util import log
 from uds.REST.model import DetailHandler
 from uds.REST import ResponseError
 from uds.core.util import permissions
-
-
+import six
 
 import logging
 
@@ -54,17 +53,17 @@ logger = logging.getLogger(__name__)
 
 
 class AssignedService(DetailHandler):
-    '''
+    """
     Rest handler for Assigned Services, wich parent is Service
-    '''
+    """
 
     @staticmethod
     def itemToDict(item, is_cache=False):
-        '''
+        """
         Converts an assigned/cached service db item to a dictionary for REST response
         :param item: item to convert
         :param is_cache: If item is from cache or not
-        '''
+        """
         props = item.getProperties()
 
         val = {
@@ -150,6 +149,7 @@ class AssignedService(DetailHandler):
             self.invalidItemException()
 
     def deleteItem(self, parent, item):  # This is also used by CachedService, so we use "userServices" directly and is valid for both
+        service = None
         try:
             service = parent.userServices.get(uuid=processUuid(item))
         except Exception:
@@ -170,9 +170,9 @@ class AssignedService(DetailHandler):
 
 
 class CachedService(AssignedService):
-    '''
+    """
     Rest handler for Cached Services, wich parent is Service
-    '''
+    """
 
     def getItems(self, parent, item):
         # Extract provider
@@ -212,9 +212,9 @@ class CachedService(AssignedService):
 
 
 class Groups(DetailHandler):
-    '''
+    """
     Processes the groups detail requests of a Service Pool
-    '''
+    """
     def getItems(self, parent, item):
         return [{
             'id': i.uuid,
@@ -249,9 +249,9 @@ class Groups(DetailHandler):
 
 
 class Transports(DetailHandler):
-    '''
+    """
     Processes the transports detail requests of a Service Pool
-    '''
+    """
     def getItems(self, parent, item):
         return [{
             'id': i.uuid,
@@ -281,16 +281,16 @@ class Transports(DetailHandler):
 
 
 class Publications(DetailHandler):
-    '''
+    """
     Processes the publications detail requests of a Service Pool
-    '''
+    """
     custom_methods = ['publish', 'cancel']  # We provided these custom methods
 
     def publish(self, parent):
-        '''
+        """
         Custom method "publish", provided to initiate a publication of a deployed service
         :param parent: Parent service pool
-        '''
+        """
         changeLog = self._params['changelog'] if 'changelog' in self._params else None
 
         if permissions.checkPermissions(self._user, parent, permissions.PERMISSION_MANAGEMENT) is False:
@@ -302,12 +302,12 @@ class Publications(DetailHandler):
         return self.success()
 
     def cancel(self, parent, uuid):
-        '''
+        """
         Invoked to cancel a running publication
         Double invocation (this means, invoking cancel twice) will mean that is a "forced cancelation"
         :param parent: Parent service pool
         :param uuid: uuid of the publication
-        '''
+        """
         if permissions.checkPermissions(self._user, parent, permissions.PERMISSION_MANAGEMENT) is False:
             logger.debug('Management Permission failed for user {}'.format(self._user))
             self.accessDenied()
@@ -316,7 +316,7 @@ class Publications(DetailHandler):
             ds = DeployedServicePublication.objects.get(uuid=processUuid(uuid))
             ds.cancel()
         except Exception as e:
-            raise ResponseError(unicode(e))
+            raise ResponseError(six.text_type(e))
 
         return self.success()
 
@@ -349,9 +349,9 @@ class Publications(DetailHandler):
 
 
 class Changelog(DetailHandler):
-    '''
+    """
     Processes the transports detail requests of a Service Pool
-    '''
+    """
     def getItems(self, parent, item):
         return [{
             'revision': i.revision,

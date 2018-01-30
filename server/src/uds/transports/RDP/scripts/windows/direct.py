@@ -4,19 +4,17 @@ from __future__ import unicode_literals
 
 # pylint: disable=import-error, no-name-in-module
 import win32crypt  # @UnresolvedImport
-import os
 import subprocess
-from uds.log import logger  # @UnresolvedImport
 
 from uds import tools  # @UnresolvedImport
 
 import six
 
+thePass = six.binary_type('{m.password}'.encode('UTF-16LE'))
 try:
-    thePass = six.binary_type('{m.password}'.encode('UTF-16LE'))
     password = win32crypt.CryptProtectData(thePass, None, None, None, None, 0x01).encode('hex')
 except Exception:
-    logger.info('Cannot encrypt for user, trying for machine')
+    # Cannot encrypt for user, trying for machine
     password = win32crypt.CryptProtectData(thePass, None, None, None, None, 0x05).encode('hex')
 
 # The password must be encoded, to be included in a .rdp file, as 'UTF-16LE' before protecting (CtrpyProtectData) it in order to work with mstsc
@@ -26,5 +24,3 @@ filename = tools.saveTempFile(theFile)
 executable = tools.findApp('mstsc.exe')
 subprocess.Popen([executable, filename])
 tools.addFileToUnlink(filename)
-
-# QtGui.QMessageBox.critical(parent, 'Notice', filename + ", " + executable, QtGui.QMessageBox.Ok)

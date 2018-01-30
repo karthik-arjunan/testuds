@@ -204,12 +204,12 @@ class UDSClient(QtGui.QMainWindow):
             QtCore.QTimer.singleShot(3000, self.endScript)
             self.hide()
 
-            # if self.serverVersion <= OLD_METHOD_VERSION:
-            #    errorString = '<p>The server <b>{}</b> runs an old version of UDS:</p>'.format(host)
-            #    errorString += '<p>To avoid security issues, you must approve old UDS Version access.</p>'
+            if self.serverVersion <= OLD_METHOD_VERSION:
+                errorString = '<p>The server <b>{}</b> runs an old version of UDS:</p>'.format(host)
+                errorString += '<p>To avoid security issues, you must approve old UDS Version access.</p>'
 
-            #    if QtGui.QMessageBox.warning(None, 'ACCESS Warning', errorString, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.No:
-            #        raise Exception('Server not approved. Access denied.')
+                if QtGui.QMessageBox.warning(None, 'ACCESS Warning', errorString, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.No:
+                    raise Exception('Server not approved. Access denied.')
 
             six.exec_(script, globals(), {'parent': self, 'sp':  params})
 
@@ -269,7 +269,6 @@ def approveHost(host, parentWindow=None):
 
     settings.endGroup()
     return approved
-
 
 if __name__ == "__main__":
     logger.debug('Initializing connector')

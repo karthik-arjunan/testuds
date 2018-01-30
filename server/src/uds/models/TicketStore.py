@@ -25,9 +25,9 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-'''
+"""
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 
 from __future__ import unicode_literals
 
@@ -35,6 +35,7 @@ from django.db import models
 
 from uds.models.UUIDModel import UUIDModel
 from uds.models.Util import getSqlDatetime
+from uds.core.managers import cryptoManager
 
 import datetime
 import pickle
@@ -44,18 +45,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-__updated__ = '2016-01-14'
+__updated__ = '2016-09-16'
 
 
 class TicketStore(UUIDModel):
-    '''
-    Image storing on DB model
-    This is intended for small images (i will limit them to 128x128), so storing at db is fine
-    '''
+    """
+    Tickets storing on DB
+    """
     DEFAULT_VALIDITY = 60
     MAX_VALIDITY = 60 * 60 * 12
     # Cleanup will purge all elements that have been created MAX_VALIDITY ago
 
+    owner = models.CharField(null=True, blank=True, default=None, max_length=8)
     stamp = models.DateTimeField()  # Date creation or validation of this entry
     validity = models.IntegerField(default=60)  # Duration allowed for this ticket to be valid, in seconds
 
@@ -66,9 +67,9 @@ class TicketStore(UUIDModel):
         pass
 
     class Meta:
-        '''
+        """
         Meta class to declare the name of the table at database
-        '''
+        """
         db_table = 'uds_tickets'
         app_label = 'uds'
 
@@ -77,40 +78,49 @@ class TicketStore(UUIDModel):
 
     @staticmethod
     def generateUuid():
-        # more secure is this:
+        # more owner is this:
         # ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(40))
-        return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(40))
+        return cryptoManager().randomString(40)
 
     @staticmethod
-    def create(data, validator=None, validity=DEFAULT_VALIDITY):
-        '''
+    def create(data, validator=None, validity=DEFAULT_VALIDITY, owner=None, secure=False):
+        """
         validity is in seconds
-        '''
+        """
         if validator is not None:
             validator = pickle.dumps(validator)
-        return TicketStore.objects.create(stamp=getSqlDatetime(), data=pickle.dumps(data), validator=validator, validity=validity).uuid
+        data = pickle.dumps(data)
+        if secure:
+            data = cryptoManager().encrypt(data)
+
+        return TicketStore.objects.create(stamp=getSqlDatetime(), data=data, validator=validator, validity=validity, owner=owner).uuid
 
     @staticmethod
-    def store(uuid, data, validator=None, validity=DEFAULT_VALIDITY):
-        '''
+    def store(uuid, data, validator=None, validity=DEFAULT_VALIDITY, owner=owner, secure=False):
+        """
         Stores an ticketstore. If one with this uuid already exists, replaces it. Else, creates a new one
         validity is in seconds
-        '''
+        """
         if validator is not None:
             validator = pickle.dumps(validator)
+
+        data = pickle.dumps(data)
+        if secure:
+            data = cryptoManager().encrypt()
+
         try:
-            t = TicketStore.objects.get(uuid=uuid)
-            t.data = pickle.dumps(data)
+            t = TicketStore.objects.get(uuid=uuid, owner=owner)
+            t.data = data
             t.stamp = getSqlDatetime()
             t.validity = validity
             t.save()
         except TicketStore.DoesNotExist:
-            t = TicketStore.objects.create(uuid=uuid, stamp=getSqlDatetime(), data=pickle.dumps(data), validator=validator, validity=validity)
+            t = TicketStore.objects.create(uuid=uuid, stamp=getSqlDatetime(), data=data, validator=validator, validity=validity, owner=owner)
 
     @staticmethod
-    def get(uuid, invalidate=True):
+    def get(uuid, invalidate=True, owner=None, secure=False):
         try:
-            t = TicketStore.objects.get(uuid=uuid)
+            t = TicketStore.objects.get(uuid=uuid, owner=owner)
             validity = datetime.timedelta(seconds=t.validity)
             now = getSqlDatetime()
 
@@ -118,7 +128,10 @@ class TicketStore(UUIDModel):
             if t.stamp + validity < now:
                 raise TicketStore.InvalidTicket('Not valid anymore')
 
-            data = pickle.loads(t.data)
+            if secure is True:
+                data = pickle.loads(cryptoManager().decrypt(t.data))
+            else:
+                data = pickle.loads(t.data)
 
             # If has validator, execute it
             if t.validator is not None:
@@ -136,9 +149,9 @@ class TicketStore(UUIDModel):
             raise TicketStore.InvalidTicket('Does not exists')
 
     @staticmethod
-    def revalidate(uuid, validity=None):
+    def revalidate(uuid, validity=None, owner=None):
         try:
-            t = TicketStore.objects.get(uuid=uuid)
+            t = TicketStore.objects.get(uuid=uuid, owner=owner)
             t.stamp = getSqlDatetime()
             if validity is not None:
                 t.validity = validity
@@ -159,4 +172,4 @@ class TicketStore(UUIDModel):
         else:
             validator = None
 
-        return 'Ticket id: {}, Stamp: {}, Validity: {}, Validator: {}, Data: {}'.format(self.uuid, self.stamp, self.validity, validator, pickle.loads(self.data))
+        return 'Ticket id: {}, Secure: {}, Stamp: {}, Validity: {}, Validator: {}, Data: {}'.format(self.uuid, self.owner, self.stamp, self.validity, validator, pickle.loads(self.data))

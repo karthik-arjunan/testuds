@@ -27,11 +27,10 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-'''
+"""
 
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_noop as _
@@ -40,10 +39,9 @@ from uds.core.auths.GroupsManager import GroupsManager
 from uds.core.util import net
 from uds.core.util.request import getRequest
 from uds.core.ui.UserInterface import gui
+import six
 
 import logging
-
-__updated__ = '2016-04-18'
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +78,7 @@ class IPAuth(Authenticator):
                 if net.ipInNetwork(ip, g):
                     groupsManager.validate(g)
             except Exception as e:
-                logger.error('Invalid network for IP auth: {0}'.format(unicode(e)))
+                logger.error('Invalid network for IP auth: {0}'.format(six.text_type(e)))
 
     def authenticate(self, username, credentials, groupsManager):
         # If credentials is a dict, that can't be sent directly from web interface, we allow entering

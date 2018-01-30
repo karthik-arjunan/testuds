@@ -26,9 +26,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 # import time
@@ -50,6 +50,7 @@ from uds.core.ui.images import DEFAULT_THUMB_BASE64
 from .user_services import AssignedService
 
 from uds.REST.model import DetailHandler
+import six
 
 import logging
 
@@ -120,6 +121,7 @@ class Users(DetailHandler):
         return {'field': 'state', 'prefix': 'row-state-'}
 
     def getLogs(self, parent, item):
+        user = None
         try:
             user = parent.users.get(uuid=processUuid(item))
         except Exception:
@@ -135,6 +137,7 @@ class Users(DetailHandler):
             self._params['password'] = cryptoManager().hash(self._params['password'])
 
         fields = self.readFieldsFromParams(valid_fields)
+        user = None
         try:
             auth = parent.getInstance()
             if item is None:  # Create new
@@ -165,9 +168,9 @@ class Users(DetailHandler):
         except IntegrityError:  # Duplicate key probably
             raise RequestError(_('User already exists (duplicate key error)'))
         except AuthenticatorException as e:
-            raise RequestError(unicode(e))
+            raise RequestError(six.text_type(e))
         except ValidationError as e:
-            raise RequestError(unicode(e.message))
+            raise RequestError(six.text_type(e.message))
         except Exception:
             logger.exception('Saving user')
             self.invalidRequestException()
@@ -283,6 +286,7 @@ class Groups(DetailHandler):
                 self.invalidRequestException()
 
     def saveItem(self, parent, item):
+        group = None  # Avoid warning on reference before assignment
         try:
             is_meta = self._params['type'] == 'meta'
             meta_if_any = self._params.get('meta_if_any', False)
@@ -324,7 +328,7 @@ class Groups(DetailHandler):
         except IntegrityError:  # Duplicate key probably
             raise RequestError(_('User already exists (duplicate key error)'))
         except AuthenticatorException as e:
-            raise RequestError(unicode(e))
+            raise RequestError(six.text_type(e))
         except Exception:
             logger.exception('Saving group')
             self.invalidRequestException()

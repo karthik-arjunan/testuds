@@ -27,13 +27,13 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 
 from django.http import HttpResponseRedirect
@@ -100,9 +100,9 @@ def errorView(request, idError):
 
 
 def exceptionView(request, exception):
-    '''
+    """
     Tries to render an error page with error information
-    '''
+    """
     logger.error(traceback.format_exc())
 
     try:
@@ -135,17 +135,17 @@ def exceptionView(request, exception):
 
 @transformId
 def error(request, idError):
-    '''
+    """
     Error view, responsible of error display
     :param request:
     :param idError:
-    '''
+    """
     idError = int(idError)
     code = idError >> 8
-    idError = idError & 0xFF
+    idError &= 0xFF
 
     errStr = errorString(idError)
     if code != 0:
         errStr += ' (code {0:04X})'.format(code)
 
-    return render_to_response(theme.template('error.html'), {'errorString': errStr}, context_instance=RequestContext(request))
+    return render(request, theme.template('error.html'), {'errorString': errStr})

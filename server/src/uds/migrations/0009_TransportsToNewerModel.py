@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations
 from uds.core.ui.UserInterface import gui
 from uds.core.util import encoders
 from uds.transports.RDP.RDPTransport import RDPTransport
@@ -19,9 +19,11 @@ def unmarshalRDP(str_):
         allowDrives = gui.strToBool(data[4])
         allowSerials = gui.strToBool(data[5])
 
-        if data[0] == 'v1':
-            wallpaper = False
-            i = 0
+        i = 0
+        wallpaper = False
+        # if data[0] == 'v1':
+        #    wallpaper = False
+        #    i = 0
 
         if data[0] in ('v2', 'v3'):
             wallpaper = gui.strToBool(data[6])
@@ -35,29 +37,33 @@ def unmarshalRDP(str_):
             withoutDomain = gui.strToBool(data[9 + i])
         else:
             withoutDomain = False
-
-    return {
-        'useEmptyCreds': useEmptyCreds,
-        'allowSmartcards': allowSmartcards,
-        'allowPrinters': allowPrinters,
-        'allowDrives': allowDrives,
-        'allowSerials': allowSerials,
-        'wallpaper': wallpaper,
-        'fixedName': fixedName,
-        'fixedPassword': fixedPassword,
-        'fixedDomain': fixedDomain,
-        'withoutDomain': withoutDomain
-    }
+        return {
+            'useEmptyCreds': useEmptyCreds,
+            'allowSmartcards': allowSmartcards,
+            'allowPrinters': allowPrinters,
+            'allowDrives': allowDrives,
+            'allowSerials': allowSerials,
+            'wallpaper': wallpaper,
+            'fixedName': fixedName,
+            'fixedPassword': fixedPassword,
+            'fixedDomain': fixedDomain,
+            'withoutDomain': withoutDomain
+        }
+    # If data not recognized
+    raise Exception('Unknown data version {}'.format(data[0]))
 
 
 def unmarshalTRDP(str_):
     data = str_.split('\t')
     if data[0] in ('v1', 'v2', 'v3'):
+        i = 0
         useEmptyCreds = gui.strToBool(data[1])
         allowSmartcards = gui.strToBool(data[2])
         allowPrinters = gui.strToBool(data[3])
         allowDrives = gui.strToBool(data[4])
         allowSerials = gui.strToBool(data[5])
+        wallpaper = False
+
         if data[0] == 'v1':
             wallpaper = False
             i = 0
@@ -77,26 +83,27 @@ def unmarshalTRDP(str_):
         else:
             withoutDomain = False
 
-    return {
-        'useEmptyCreds': useEmptyCreds,
-        'allowSmartcards': allowSmartcards,
-        'allowPrinters': allowPrinters,
-        'allowDrives': allowDrives,
-        'allowSerials': allowSerials,
-        'wallpaper': wallpaper,
-        'fixedName': fixedName,
-        'fixedPassword': fixedPassword,
-        'fixedDomain': fixedDomain,
-        'withoutDomain': withoutDomain,
-        'tunnelServer': tunnelServer,
-        'tunnelCheckServer': tunnelCheckServer
-    }
+        return {
+            'useEmptyCreds': useEmptyCreds,
+            'allowSmartcards': allowSmartcards,
+            'allowPrinters': allowPrinters,
+            'allowDrives': allowDrives,
+            'allowSerials': allowSerials,
+            'wallpaper': wallpaper,
+            'fixedName': fixedName,
+            'fixedPassword': fixedPassword,
+            'fixedDomain': fixedDomain,
+            'withoutDomain': withoutDomain,
+            'tunnelServer': tunnelServer,
+            'tunnelCheckServer': tunnelCheckServer
+        }
+
 
 
 def transformTransports(apps, schema_editor):
-    '''
+    """
     Move serialization to a better model (it's time, the mode is there since 1.1 :) )
-    '''
+    """
     model = apps.get_model("uds", 'Transport')
     for t in model.objects.all():
         if t.data_type == RDPTransport.typeType:

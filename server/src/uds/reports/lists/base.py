@@ -27,16 +27,19 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from uds.core import reports
 from django.utils.translation import ugettext_noop as _
 
-__updated__ = '2015-06-21'
+__updated__ = '2017-05-10'
 
 
 class ListReport(reports.Report):
+    def generate(self):
+        raise NotImplementedError('ListReport generate invoked and not implemented')
+
     group = _('Lists')  # So we can make submenus with reports

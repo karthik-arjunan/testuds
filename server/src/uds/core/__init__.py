@@ -27,11 +27,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 Core of UDS.
 This package contains all core-related code for UDS
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 # Core needs tasks manager to register scheduled jobs, so we ensure of that here
@@ -39,5 +39,7 @@ from uds.core.Environment import Environmentable
 from uds.core.Serializable import Serializable
 from uds.core.BaseModule import Module
 
-VERSION = '2.2.0-DEVEL'
-VERSION_STAMP = '20170901-DEVEL'
+import time
+
+VERSION = '2.x.x-DEVEL'
+VERSION_STAMP = '{}-DEVEL'.format(time.strftime("%Y%m%d"))

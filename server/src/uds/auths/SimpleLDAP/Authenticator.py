@@ -28,10 +28,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-'''
+"""
 
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 
 from __future__ import unicode_literals
 
@@ -167,13 +167,12 @@ class SimpleLDAPAuthenticator(Authenticator):
                     password = self._password
 
                 l.simple_bind_s(who=username, cred=password)
-            except ldap.LDAPError, e:
+            except ldap.LDAPError as e:
                 str_ = _('Ldap connection error: ')
-                if type(e.message) == dict:
-                    str_ += 'info' in e.message and e.message['info'] + ',' or ''
-                    str_ += 'desc' in e.message and e.message['desc'] or ''
+                if isinstance(e.message, dict):
+                    str_ += ', '.join((e.message.get('info', ''), e.message.get('desc')))
                 else:
-                    str_ += str_(e)
+                    str_ += six.text_type(e)
                 raise Exception(str_)
             if cache is True:
                 self._connection = l
@@ -185,10 +184,10 @@ class SimpleLDAPAuthenticator(Authenticator):
         try:
             con = self.__connection()
             filter_ = '(&(objectClass=%s)(%s=%s))' % (self._userClass, self._userIdAttr, ldap.filter.escape_filter_chars(username, 0))
-            attrlist = [i.encode('utf-8') for i in  self._userNameAttr.split(',') + [self._userIdAttr]]
+            attrlist = [i.encode('utf-8') for i in self._userNameAttr.split(',') + [self._userIdAttr]]
             logger.debug('Getuser filter_: {0}, attr list: {1}'.format(filter_, attrlist))
             res = con.search_ext_s(base=self._ldapBase, scope=ldap.SCOPE_SUBTREE,
-                             filterstr=filter_, attrlist=attrlist, sizelimit=LDAP_RESULT_LIMIT)[0]
+                                   filterstr=filter_, attrlist=attrlist, sizelimit=LDAP_RESULT_LIMIT)[0]
             usr = dict((k, '') for k in attrlist)
             usr.update(res[1])
             usr.update({'dn': res[0], '_id': username})
@@ -237,14 +236,14 @@ class SimpleLDAPAuthenticator(Authenticator):
             return {}
 
     def __getUserRealName(self, usr):
-        '''
+        """
         Tries to extract the real name for this user. Will return all atttributes (joint)
         specified in _userNameAttr (comma separated).
-        '''
+        """
         return ' '.join([(type(usr.get(id_, '')) is list and ' '.join((str(k) for k in usr.get(id_, ''))) or str(usr.get(id_, ''))) for id_ in self._userNameAttr.split(',')]).strip()
 
     def authenticate(self, username, credentials, groupsManager):
-        '''
+        """
         Must authenticate the user.
         We can have to different situations here:
            1.- The authenticator is external source, what means that users may be unknown to system before callig this
@@ -252,7 +251,7 @@ class SimpleLDAPAuthenticator(Authenticator):
         We receive the username, the credentials used (normally password, but can be a public key or something related to pk) and a group manager.
         The group manager is responsible for letting know the authenticator which groups we currently has active.
         @see: uds.core.auths.GroupsManager
-        '''
+        """
         try:
             # Locate the user at LDAP
             usr = self.__getUser(username)
@@ -271,11 +270,11 @@ class SimpleLDAPAuthenticator(Authenticator):
             return False
 
     def createUser(self, usrData):
-        '''
+        """
         Groups are only used in case of internal users (non external sources) that must know to witch groups this user belongs to
         @param usrData: Contains data received from user directly, that is, a dictionary with at least: name, realName, comments, state & password
         @return:  Raises an exception (AuthException) it things didn't went fine
-        '''
+        """
         res = self.__getUser(usrData['name'])
         if res is None:
             raise AuthenticatorException(_('Username not found'))
@@ -283,42 +282,42 @@ class SimpleLDAPAuthenticator(Authenticator):
         usrData['real_name'] = self.__getUserRealName(res)
 
     def getRealName(self, username):
-        '''
+        """
         Tries to get the real name of an user
-        '''
+        """
         res = self.__getUser(username)
         if res is None:
             return username
         return self.__getUserRealName(res)
 
     def modifyUser(self, usrData):
-        '''
+        """
         We must override this method in authenticators not based on external sources (i.e. database users, text file users, etc..)
         Modify user has no reason on external sources, so it will never be used (probably)
         Groups are only used in case of internal users (non external sources) that must know to witch groups this user belongs to
         @param usrData: Contains data received from user directly, that is, a dictionary with at least: name, realName, comments, state & password
         @return:  Raises an exception it things don't goes fine
-        '''
+        """
         return self.createUser(usrData)
 
     def createGroup(self, groupData):
-        '''
+        """
         We must override this method in authenticators not based on external sources (i.e. database users, text file users, etc..)
         External sources already has its own groups and, at most, it can check if it exists on external source before accepting it
         Groups are only used in case of internal users (non external sources) that must know to witch groups this user belongs to
         @params groupData: a dict that has, at least, name, comments and active
         @return:  Raises an exception it things don't goes fine
-        '''
+        """
         res = self.__getGroup(groupData['name'])
         if res is None:
             raise AuthenticatorException(_('Group not found'))
 
     def getGroups(self, username, groupsManager):
-        '''
+        """
         Looks for the real groups to which the specified user belongs
         Updates groups manager with valid groups
         Remember to override it in derived authentication if needed (external auths will need this, for internal authenticators this is never used)
-        '''
+        """
         user = self.__getUser(username)
         if user is None:
             raise AuthenticatorException(_('Username not found'))
@@ -361,14 +360,14 @@ class SimpleLDAPAuthenticator(Authenticator):
         try:
             auth = SimpleLDAPAuthenticator(None, env, data)
             return auth.testConnection()
-        except Exception, e:
+        except Exception as e:
             logger.error("Exception found testing Simple LDAP auth {0}: {1}".format(e.__class__, e))
             return [False, "Error testing connection"]
 
     def testConnection(self):
         try:
             con = self.__connection()
-        except Exception, e:
+        except Exception as e:
             return [False, str(e)]
 
         try:
@@ -380,7 +379,7 @@ class SimpleLDAPAuthenticator(Authenticator):
             if len(con.search_ext_s(base=self._ldapBase, scope=ldap.SCOPE_SUBTREE, filterstr='(objectClass=%s)' % self._userClass, sizelimit=1)) == 1:
                 raise Exception()
             return [False, _('Ldap user class seems to be incorrect (no user found by that class)')]
-        except Exception, e:
+        except Exception as e:
             # If found 1 or more, all right
             pass
 
@@ -388,7 +387,7 @@ class SimpleLDAPAuthenticator(Authenticator):
             if len(con.search_ext_s(base=self._ldapBase, scope=ldap.SCOPE_SUBTREE, filterstr='(objectClass=%s)' % self._groupClass, sizelimit=1)) == 1:
                 raise Exception()
             return [False, _('Ldap group class seems to be incorrect (no group found by that class)')]
-        except Exception, e:
+        except Exception as e:
             # If found 1 or more, all right
             pass
 
@@ -396,7 +395,7 @@ class SimpleLDAPAuthenticator(Authenticator):
             if len(con.search_ext_s(base=self._ldapBase, scope=ldap.SCOPE_SUBTREE, filterstr='(%s=*)' % self._userIdAttr, sizelimit=1)) == 1:
                 raise Exception()
             return [False, _('Ldap user id attribute seems to be incorrect (no user found by that attribute)')]
-        except Exception, e:
+        except Exception as e:
             # If found 1 or more, all right
             pass
 
@@ -404,7 +403,7 @@ class SimpleLDAPAuthenticator(Authenticator):
             if len(con.search_ext_s(base=self._ldapBase, scope=ldap.SCOPE_SUBTREE, filterstr='(%s=*)' % self._groupIdAttr, sizelimit=1)) == 1:
                 raise Exception()
             return [False, _('Ldap group id attribute seems to be incorrect (no group found by that attribute)')]
-        except Exception, e:
+        except Exception as e:
             # If found 1 or more, all right
             pass
 
@@ -413,7 +412,7 @@ class SimpleLDAPAuthenticator(Authenticator):
             if len(con.search_ext_s(base=self._ldapBase, scope=ldap.SCOPE_SUBTREE, filterstr='(&(objectClass=%s)(%s=*))' % (self._userClass, self._userIdAttr), sizelimit=1)) == 1:
                 raise Exception()
             return [False, _('Ldap user class or user id attr is probably wrong (can\'t find any user with both conditions)')]
-        except Exception, e:
+        except Exception as e:
             # If found 1 or more, all right
             pass
 
@@ -424,12 +423,12 @@ class SimpleLDAPAuthenticator(Authenticator):
                 raise Exception(_('Ldap group class or group id attr is probably wrong (can\'t find any group with both conditions)'))
             ok = False
             for r in res:
-                if self._memberAttr in  r[1]:
+                if self._memberAttr in r[1]:
                     ok = True
                     break
             if ok is False:
                 raise Exception(_('Can\'t locate any group with the membership attribute specified'))
-        except Exception, e:
-            return [False, str(e)]
+        except Exception as e:
+            return [False, six.text_type(e)]
 
         return [True, _("Connection params seem correct, test was succesfully executed")]

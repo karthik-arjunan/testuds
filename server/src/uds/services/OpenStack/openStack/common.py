@@ -54,7 +54,6 @@ STOPPED, SUSPENDED, UNKNOWN, VERIFY_RESIZE, SHUTOFF) = ('ACTIVE', 'BUILDING', 'D
 def statusIsLost(status):
     return status in [DELETED, ERROR, UNKNOWN, SOFT_DELETED]
 
-
 def sanitizeName(name):
     '''
     machine names with [a-zA-Z0-9_-]

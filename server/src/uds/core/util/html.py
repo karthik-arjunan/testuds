@@ -27,15 +27,16 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.utils.translation import get_language
 from uds.core.util import OsDetector
 from django.utils import formats
 
+import six
 import logging
 
 __updated__ = '2015-05-03'
@@ -100,16 +101,16 @@ _browsers = {
 
 
 def checkBrowser(request, browser):
-    '''
+    """
     Known browsers right now:
     ie[version]
     ie<[version]
-    '''
+    """
     # Split brwosers we look for
     needs_version = 0
     needs = ''
 
-    for b, requires in _browsers.iteritems():
+    for b, requires in six.iteritems(_browsers):
         if browser.startswith(b):
             if request.os.Browser not in requires:
                 return False

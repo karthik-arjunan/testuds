@@ -357,9 +357,35 @@ class UserService(UUIDModel):
         from uds.core.managers.UserServiceManager import UserServiceManager
         self.in_use = state
         self.in_use_date = getSqlDatetime()
+
+        # Start/stop accounting
+        if state is True:
+            self.startUsageAccounting()
+        else:
+            self.stopUsageAccounting()
+
         if state is False:  # Service released, check y we should mark it for removal
             # If our publication is not current, mark this for removal
             UserServiceManager.manager().checkForRemoval(self)
+
+    def startUsageAccounting(self):
+        # 1.- If do not have any account associated, do nothing
+        # 2.- If called but already accounting, do nothing
+        # 3.- If called and not accounting, start accounting
+        if self.deployed_service.account is None or hasattr(self, 'accounting'):  # accounting comes from AccountUsage, and is a OneToOneRelation with UserService
+            return
+
+        self.deployed_service.account.startUsageAccounting(self)
+
+    def stopUsageAccounting(self):
+        # 1.- If do not have any accounter associated, do nothing
+        # 2.- If called but not accounting, do nothing
+        # 3.- If called and accounting, stop accounting
+        if self.deployed_service.account is None or hasattr(self, 'accounting') is False:
+            return
+
+        self.deployed_service.account.stopUsageAccounting(self)
+
 
     def isUsable(self):
         '''
@@ -483,6 +509,9 @@ class UserService(UUIDModel):
         '''
         return self.deployed_service.service.getType().publicationType is None or self.publication == self.deployed_service.activePublication()
 
+    def testServer(self, host, port, timeout=4):
+        return self.deployed_service.testServer(host, port, timeout)
+
     def __str__(self):
         return "User service {0}, cache_level {1}, user {2}, name {3}, state {4}:{5}".format(self.id, self.cache_level, self.user, self.friendly_name,
                                                                                              State.toString(self.state), State.toString(self.os_state))
@@ -504,7 +533,6 @@ class UserService(UUIDModel):
         log.clearLogs(toDelete)
 
         logger.debug('Deleted user service {0}'.format(toDelete))
-
 
 # Connects a pre deletion signal to Authenticator
 signals.pre_delete.connect(UserService.beforeDelete, sender=UserService)

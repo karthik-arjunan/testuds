@@ -27,13 +27,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_noop as _, ugettext_lazy
 
+import six
 import logging
 
 __updated__ = '2016-02-19'
@@ -89,53 +90,69 @@ VALID_STATES = [USABLE, PREPARING]
 # Publication States
 PUBLISH_STATES = [LAUNCHING, PREPARING]
 
+
 def isActive(state):
     return state == ACTIVE
+
 
 def isInactive(state):
     return state == INACTIVE
 
+
 def isBlocked(state):
     return state == BLOCKED
+
 
 def isPreparing(state):
     return state == PREPARING
 
+
 def isUsable(state):
     return state == USABLE
+
 
 def isRemovable(state):
     return state == REMOVABLE
 
+
 def isRemoving(state):
     return state == REMOVING
+
 
 def isRemoved(state):
     return state == REMOVED
 
+
 def isCanceling(state):
     return state == CANCELING
+
 
 def isCanceled(state):
     return state == CANCELED
 
+
 def isErrored(state):
     return state == ERROR
+
 
 def isFinished(state):
     return state == FINISHED
 
+
 def isRuning(state):
     return state == RUNNING
+
 
 def isForExecute(state):
     return state == FOR_EXECUTE
 
+
 def toString(state):
     return string.get(state, '')
 
+
 def dictionary():
-    '''
+    """
     Returns a dictionary with current active locale translation of States to States String
-    '''
-    return dict([(k, ugettext_lazy(v)) for k, v in string.iteritems()])
+    """
+    return dict([(k, ugettext_lazy(v)) for k, v in six.iteritems(string)])

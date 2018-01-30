@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 
 # Make sure that all services are "available" at service startup
 
@@ -51,12 +51,12 @@ __updated__ = '2017-04-17'
 
 # Default ssl context is unverified, as MOST servers that we will connect will be with self signed certificates...
 try:
+    # noinspection PyProtectedMember
     _create_unverified_https_context = ssl._create_unverified_context
     ssl._create_default_https_context = _create_unverified_https_context
 except AttributeError:
     # Legacy Python that doesn't verify HTTPS certificates by default
     pass
-
 
 
 class UDSAppConfig(AppConfig):

@@ -47,13 +47,14 @@ from uds.core import VERSION as UDS_VERSION
 from uds.core.util import encoders
 
 import six
+import json
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 CLIENT_VERSION = UDS_VERSION
-REQUIRED_CLIENT_VERSION = '2.0.0'
+REQUIRED_CLIENT_VERSION = '2.5.0'
 
 
 # Enclosed methods under /actor path
@@ -69,6 +70,8 @@ class Client(Handler):
         Helper method to create a "result" set for actor response
         :param result: Result value to return (can be None, in which case it is converted to empty string '')
         :param error: If present, This response represents an error. Result will contain an "Explanation" and error contains the error code
+        :param errorCode: Code of the error to return, if error is not None
+        :param retryable: If True, this operation can (and must) be retryed
         :return: A dictionary, suitable for response to Caller
         '''
         result = result if result is not None else ''
@@ -99,7 +102,7 @@ class Client(Handler):
         logger.debug("Client args for GET: {0}".format(self._args))
 
         if len(self._args) == 0:  # Gets version
-            url = self._request.build_absolute_uri(reverse('ClientDownload'))
+            url = self._request.build_absolute_uri(reverse('uds.web.views.client_downloads'))
             return Client.result({
                 'availableVersion': CLIENT_VERSION,
                 'requiredVersion': REQUIRED_CLIENT_VERSION,
@@ -139,9 +142,16 @@ class Client(Handler):
 
             userService.setConnectionSource(srcIp, hostname)  # Store where we are accessing from so we can notify Service
 
-            transportScript = transportInstance.getEncodedTransportScript(userService, transport, ip, self._request.os, self._request.user, password, self._request)
+            transportScript, signature, params = transportInstance.getEncodedTransportScript(userService, transport, ip, self._request.os, self._request.user, password, self._request)
 
-            return Client.result(result=transportScript)
+            logger.debug('Signature: {}'.format(signature))
+            logger.debug('Data:#######\n{}\n###########'.format(params))
+
+            return Client.result(result={
+                'script': transportScript,
+                'signature': signature,  # It is already on base64
+                'params': json.dumps(params).encode('bz2').encode('base64'),
+            })
         except ServiceNotReadyError as e:
             # Refresh ticket and make this retrayable
             TicketStore.revalidate(ticket, 20)  # Retry will be in at most 5 seconds

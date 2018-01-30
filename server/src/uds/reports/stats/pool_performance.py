@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -40,8 +40,8 @@ from uds.core.ui.UserInterface import gui
 from uds.core.reports.tools import UDSImage, UDSGeraldoReport
 from uds.core.util.stats import events
 
-import StringIO
 import csv
+import six
 
 import cairo
 import pycha.line
@@ -56,7 +56,7 @@ from geraldo.generators.pdf import PDFGenerator
 from geraldo import ReportBand, ObjectValue, BAND_WIDTH, Label, SubReport, SystemField, Line
 from reportlab.lib.units import cm, mm
 from reportlab.lib.enums import TA_RIGHT, TA_CENTER
-from reportlab.lib import colors
+# from reportlab.lib import colors
 from PIL import Image as PILImage
 
 import datetime
@@ -246,7 +246,7 @@ class PoolPerformanceReport(StatsReport):
                 'dataAccesses': dataAccesses,
             })
 
-        return (xLabelFormat, poolsData, reportData)
+        return xLabelFormat, poolsData, reportData
 
     def generate(self):
         # Generate the sampling intervals and get dataUsers from db
@@ -344,7 +344,7 @@ class PoolPerformanceReport(StatsReport):
 
         logger.debug(queryset)
 
-        output = StringIO.StringIO()
+        output = six.StringIO()
 
         try:
             report = AccessReport(queryset=queryset)

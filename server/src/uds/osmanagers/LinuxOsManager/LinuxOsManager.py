@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_noop as _
@@ -92,9 +92,9 @@ class LinuxOsManager(osmanagers.OSManager):
         pass
 
     def getName(self, service):
-        '''
+        """
         gets name from deployed
-        '''
+        """
         return service.getName()
 
     def infoVal(self, service):
@@ -105,15 +105,13 @@ class LinuxOsManager(osmanagers.OSManager):
 
     def notifyIp(self, uid, service, data):
         si = service.getInstance()
-
         ip = ''
+
         # Notifies IP to deployed
-        pairs = data.split(',')
-        for p in pairs:
-            key, val = p.split('=')
-            if key.lower() == uid.lower():
-                si.setIp(val)
-                ip = val
+        for p in data['ips']:
+            if p[0].lower() == uid.lower():
+                si.setIp(p[1])
+                ip = p[1]
                 break
 
         self.logKnownIp(service, ip)
@@ -132,21 +130,27 @@ class LinuxOsManager(osmanagers.OSManager):
         except Exception:
             log.doLog(service, log.ERROR, "do not understand {0}".format(data), origin)
 
-    def process(self, userService, msg, data, options):
-        '''
+    def process(self, userService, msg, data, options=None):
+        """
         We understand this messages:
         * msg = info, data = None. Get information about name of machine (or domain, in derived WinDomainOsManager class), old method
         * msg = information, data = None. Get information about name of machine (or domain, in derived WinDomainOsManager class), new method
         * msg = logon, data = Username, Informs that the username has logged in inside the machine
         * msg = logoff, data = Username, Informs that the username has logged out of the machine
         * msg = ready, data = None, Informs machine ready to be used
-        '''
+        """
         logger.info("Invoked LinuxOsManager for {0} with params: {1},{2}".format(userService, msg, data))
         # We get from storage the name for this userService. If no name, we try to assign a new one
         ret = "ok"
         notifyReady = False
         doRemove = False
         state = userService.os_state
+        if msg in ('ready', 'ip'):
+            if not isinstance(data, dict):  # Old actors, previous to 2.5, convert it information..
+                data = {
+                    'ips': [v.split('=') for v in data.split(',')],
+                    'hostname': userService.friendly_name
+                }
 
         # Old "info" state, will be removed in a near future
         if msg == "info":
@@ -190,30 +194,30 @@ class LinuxOsManager(osmanagers.OSManager):
         return ret
 
     def processUnused(self, userService):
-        '''
+        """
         This will be invoked for every assigned and unused user service that has been in this state at least 1/2 of Globalconfig.CHECK_UNUSED_TIME
         This function can update userService values. Normal operation will be remove machines if this state is not valid
-        '''
+        """
         if self._onLogout == 'remove':
-            userService.remove()
+            userService.release()
 
     def checkState(self, service):
         logger.debug('Checking state for service {0}'.format(service))
         return State.RUNNING
 
     def maxIdle(self):
-        '''
+        """
         On production environments, will return no idle for non removable machines
-        '''
+        """
         if self._idle <= 0:  # or (settings.DEBUG is False and self._onLogout != 'remove'):
             return None
 
         return self._idle
 
     def marshal(self):
-        '''
+        """
         Serializes the os manager data so we can store it in database
-        '''
+        """
         return '\t'.join(['v2', self._onLogout, six.text_type(self._idle)])
 
     def unmarshal(self, s):
