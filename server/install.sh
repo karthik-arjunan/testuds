@@ -1,3 +1,4 @@
+sudo apt-get install python-pip
 sudo pip install --upgrade setuptools
 sudo apt-get install -y libffi-dev libssl-dev
 sudo apt-get install -y libmysqlclient-dev
