@@ -25,24 +25,25 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
-import logging
+__updated__ = '2015-02-28'
 
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseForbidden
 from django.template import RequestContext, loader
+
+from django.shortcuts import render
 from django.utils.translation import ugettext as _
 
 from uds.core.auths.auth import webLoginRequired
 from uds.core.util.decorators import denyBrowsers
 
-logger = logging.getLogger(__name__)
+import logging
 
-__updated__ = '2017-05-18'
+logger = logging.getLogger(__name__)
 
 
 @denyBrowsers(browsers=['ie<9'])
@@ -57,7 +58,7 @@ def tmpl(request, template):
     try:
         t = loader.get_template('uds/admin/tmpl/' + template + ".html")
         c = RequestContext(request)
-        resp = t.render(c.flatten())
+        resp = t.render(c)
     except Exception as e:
         logger.debug('Exception getting template: {0}'.format(e))
         resp = _('requested a template that do not exist')

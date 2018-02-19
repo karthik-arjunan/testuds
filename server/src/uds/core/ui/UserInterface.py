@@ -33,7 +33,6 @@
 from __future__ import unicode_literals
 
 from django.utils.translation import get_language, ugettext as _, ugettext_noop
-from uds.core.util import encoders
 import datetime
 import time
 import six
@@ -109,7 +108,7 @@ class gui(object):
     @staticmethod
     def convertToList(vals):
         if vals is not None:
-            return [six.text_type(v) for v in vals]
+            return [unicode(v) for v in vals]
         return []
 
     @staticmethod
@@ -776,12 +775,12 @@ class gui(object):
 
 
 class UserInterfaceType(type):
-    """
+    '''
     Metaclass definition for moving the user interface descriptions to a usable
     better place
-    """
+    '''
 
-    def __new__(self, classname, bases, classDict):
+    def __new__(cls, classname, bases, classDict):
         newClassDict = {}
         _gui = {}
         # We will keep a reference to gui elements also at _gui so we can access them easily
@@ -790,7 +789,7 @@ class UserInterfaceType(type):
                 _gui[attrName] = attr
             newClassDict[attrName] = attr
         newClassDict['_gui'] = _gui
-        return type.__new__(self, classname, bases, newClassDict)
+        return type.__new__(cls, classname, bases, newClassDict)
 
 
 @six.add_metaclass(UserInterfaceType)
@@ -813,11 +812,11 @@ class UserInterface(object):
         # Generate a deep copy of inherited Gui, so each User Interface instance has its own "field" set, and do not share the "fielset" with others, what can be really dangerous
         # Till now, nothing bad happened cause there where being used "serialized", but this do not have to be this way
         self._gui = copy.deepcopy(self._gui)  # Ensure "gui" is our own instance, deep copied from base
-        for key, val in six.iteritems(self._gui):  # And refresh references to them
+        for key, val in self._gui.iteritems():  # And refresh references to them
             setattr(self, key, val)
 
         if values is not None:
-            for k, v in six.iteritems(self._gui):
+            for k, v in self._gui.iteritems():
                 if k in values:
                     v.value = values[k]
                 else:
@@ -872,7 +871,7 @@ class UserInterface(object):
 
         '''
         dic = {}
-        for k, v in six.iteritems(self._gui):
+        for k, v in self._gui.iteritems():
             if v.isType(gui.InputField.EDITABLE_LIST):
                 dic[k] = gui.convertToList(v.value)
             elif v.isType(gui.InputField.MULTI_CHOICE_TYPE):
@@ -902,7 +901,7 @@ class UserInterface(object):
         # logger.debug('Caller is : {}'.format(inspect.stack()))
 
         arr = []
-        for k, v in six.iteritems(self._gui):
+        for k, v in self._gui.iteritems():
             logger.debug('serializing Key: {0}/{1}'.format(k, v.value))
             if v.isType(gui.InputField.HIDDEN_TYPE) and v.isSerializable() is False:
                 # logger.debug('Field {0} is not serializable'.format(k))
@@ -922,7 +921,7 @@ class UserInterface(object):
             elif val is False:
                 val = gui.FALSE
             arr.append(k + '\003' + val)
-        return encoders.encode('\002'.join(arr), 'zip')
+        return '\002'.join(arr).encode('zip')
 
     def unserializeForm(self, values):
         '''
@@ -930,18 +929,18 @@ class UserInterface(object):
         :py:meth:`serializeForm`, and stores
         the valid values form form fileds inside its corresponding field
         '''
-        if values == b'':  # Has nothing
+        if values == '':  # Has nothing
             return
 
         try:
             # Set all values to defaults ones
-            for k in six.iterkeys(self._gui):
+            for k in self._gui.iterkeys():
                 if self._gui[k].isType(gui.InputField.HIDDEN_TYPE) and self._gui[k].isSerializable() is False:
                     # logger.debug('Field {0} is not unserializable'.format(k))
                     continue
                 self._gui[k].value = self._gui[k].defValue
 
-            values = encoders.decode(values, 'zip', True)
+            values = values.decode('zip')
             if values == '':  # Has nothing
                 return
 
@@ -958,9 +957,8 @@ class UserInterface(object):
                     self._gui[k].value = val
                 # logger.debug('Value for {0}:{1}'.format(k, val))
         except Exception:
-            logger.exception('Exception on unserialization')
             # Values can contain invalid characters, so we log every single char
-            # logger.info('Invalid serialization data on {0} {1}'.format(self, values.encode('hex')))
+            logger.info('Invalid serialization data on {0} {1}'.format(self, values.encode('hex')))
 
     @classmethod
     def guiDescription(cls, obj=None):
@@ -981,7 +979,7 @@ class UserInterface(object):
 
         res = []
         # pylint: disable=protected-access,maybe-no-member
-        for key, val in six.iteritems(theGui._gui):
+        for key, val in theGui._gui.iteritems():
             logger.debug('{0} ### {1}'.format(key, val))
             res.append({'name': key, 'gui': val.guiDescription(), 'value': ''})
 

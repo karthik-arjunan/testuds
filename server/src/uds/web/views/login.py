@@ -25,13 +25,14 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext
 
@@ -43,6 +44,7 @@ from uds.core.util.Cache import Cache
 from uds.core.util import OsDetector
 from uds.core.ui import theme
 from uds.core import VERSION
+from django.views.decorators.csrf import csrf_exempt
 
 import uds.web.errors as errors
 import logging
@@ -53,11 +55,11 @@ __updated__ = '2017-06-01'
 # Allow cross-domain login
 # @csrf_exempt
 def login(request, tag=None):
-    """
+    '''
     View responsible of logging in an user
     :param request:  http request
     :param tag: tag of login auth
-    """
+    '''
     # request.session.set_expiry(GlobalConfig.USER_SESSION_LENGTH.getInt())
 
     host = request.META.get('HTTP_HOST') or request.META.get('SERVER_NAME') or 'auth_host'  # Last one is a placeholder in case we can't locate host name
@@ -133,14 +135,15 @@ def login(request, tag=None):
     else:
         form = LoginForm(tag=tag)
 
-    response = render(request,
+    response = render_to_response(
         theme.template('login.html'),
         {
             'form': form,
             'customHtml': GlobalConfig.CUSTOM_HTML_LOGIN.get(True),
             'version': VERSION
 
-        }
+        },
+        context_instance=RequestContext(request)
     )
 
     getUDSCookie(request, response)

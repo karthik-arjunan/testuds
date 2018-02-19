@@ -25,15 +25,15 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.http import HttpResponse
 from django.utils.translation import ugettext_noop
 
-from django.shortcuts import render
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from uds.core.managers.UserPrefsManager import UserPrefsManager, CommonPrefs
@@ -45,7 +45,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-__updated__ = '2016-08-26'
+__updated__ = '2016-04-05'
 
 
 UserPrefsManager.manager().registerPrefs(
@@ -58,18 +58,16 @@ UserPrefsManager.manager().registerPrefs(
 
 
 def client_downloads(request, os=None):
-    """
+    '''
     Download page for UDS plugins
-    """
+    '''
     if os not in desktopOss:
         os = request.os['OS']
     logger.debug('User: {}'.format(request.user))
     os = os.lower()
-    return render(
-        request,
-        theme.template('download_client.html'),
-        {'os': os, 'user': request.user}
-    )
+    return render_to_response(theme.template('download_client.html'),
+                              {'os': os, 'user': request.user},
+                              context_instance=RequestContext(request))
 
 
 @webLoginRequired(admin=False)

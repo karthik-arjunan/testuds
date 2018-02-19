@@ -27,15 +27,17 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 
 from __future__ import unicode_literals
 from django.utils.translation import ugettext_noop as _
+from uds.core.managers.UserPrefsManager import CommonPrefs
 from uds.core.ui.UserInterface import gui
 from uds.core.transports.BaseTransport import Transport
 from uds.core.transports import protocols
+from uds.core.util import connection
 
 import logging
 import os
@@ -48,10 +50,10 @@ READY_CACHE_TIMEOUT = 30
 
 
 class BaseRDPTransport(Transport):
-    """
+    '''
     Provides access via RDP to service.
     This transport can use an domain. If username processed by authenticator contains '@', it will split it and left-@-part will be username, and right password
-    """
+    '''
     iconFile = 'rdp.png'
     protocol = protocols.RDP
 
@@ -108,15 +110,15 @@ class BaseRDPTransport(Transport):
     customParameters = gui.TextField(label=_('Custom parameters'), order=45, tooltip=_('If not empty, extra parameter to include for Linux Client (for example /usb:id,dev:054c:0268, or aything compatible with your xfreerdp client)'), tab='Linux Client')
 
     def isAvailableFor(self, userService, ip):
-        """
+        '''
         Checks if the transport is available for the requested destination ip
         Override this in yours transports
-        """
+        '''
         logger.debug('Checking availability for {0}'.format(ip))
         ready = self.cache.get(ip)
         if ready is None:
             # Check again for ready
-            if self.testServer(userService, ip, '3389') is True:
+            if connection.testServer(ip, '3389') is True:
                 self.cache.put(ip, 'Y', READY_CACHE_TIMEOUT)
                 return True
             else:
@@ -150,34 +152,19 @@ class BaseRDPTransport(Transport):
         if self.withoutDomain.isTrue():
             domain = ''
 
-        if domain != '':  # If has domain
-            if '.' in domain:  # Dotter domain form
-                username = username + '@' + domain
-                domain = ''
-            else:  # In case of a NETBIOS domain (not recomended), join it so processUserPassword can deal with it
-                username = domain + '\\' + username
-                domain = ''
-
-        # Temporal "fix" to check if we do something on processUserPassword
+        if '.' in domain:  # Dotter domain form
+            username = username + '@' + domain
+            domain = ''
 
         # Fix username/password acording to os manager
         username, password = service.processUserPassword(username, password)
-
-        # Recover domain name if needed
-        if '\\' in username:
-            username, domain = username.split('\\')
 
         return {'protocol': self.protocol, 'username': username, 'password': password, 'domain': domain}
 
     def getConnectionInfo(self, service, user, password):
         return self.processUserPassword(service, user, password)
 
-    def getScript(self, scriptName, osName, params):
-        # Reads script
-        scriptName = scriptName.format(osName)
-        with open(os.path.join(os.path.dirname(__file__), scriptName)) as f:
-            script = f.read()
-        # Reads signature
-        with open(os.path.join(os.path.dirname(__file__), scriptName + '.signature')) as f:
-            signature = f.read()
-        return script, signature, params
+    def getScript(self, script):
+        with open(os.path.join(os.path.dirname(__file__), script)) as f:
+            data = f.read()
+        return data

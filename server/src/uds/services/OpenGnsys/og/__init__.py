@@ -27,21 +27,23 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from . import urls
 from . import fake
 
+import sys
+import imp
 import re
 
 import logging
 import six
 
 import requests
-import json
+import  json
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +60,6 @@ def ensureConnected(fnc):
         args[0].connect()
         return fnc(*args, **kwargs)
     return inner
-
 
 # Result checker
 def ensureResponseIsValid(response, errMsg=None):
@@ -119,6 +120,7 @@ class OpenGnsysClient(object):
         # FAKE Connection :)
         return fake.get(path, errMsg)
 
+
     def _delete(self, path, errMsg=None):
         if not FAKE:
             return ensureResponseIsValid(
@@ -136,8 +138,7 @@ class OpenGnsysClient(object):
         if self.auth is not None:
             return
 
-        auth = self._post(
-            urls.LOGIN,
+        auth = self._post(urls.LOGIN,
             data={
                 'username': self.username,
                 'password': self.password
@@ -147,6 +148,7 @@ class OpenGnsysClient(object):
 
         self.auth = auth['apikey']
         self.cache.put(cacheKey, self.auth, CACHE_VALIDITY)
+
 
     @property
     def version(self):
@@ -173,6 +175,7 @@ class OpenGnsysClient(object):
         # Take into accout that we must exclude the ones with "inremotepc" set to false.
         errMsg = 'Getting list of labs from ou {}'.format(ou)
         return [{'id': l['id'], 'name': l['name']} for l in self._get(urls.LABS.format(ou=ou), errMsg=errMsg) if l.get('inremotepc', False) is True]
+
 
     @ensureConnected
     def getImages(self, ou):
@@ -237,11 +240,12 @@ class OpenGnsysClient(object):
 
         return self._post(urls.SESSIONS.format(ou=ou, lab=lab, client=client), data, errMsg=errMsg)
 
+
     @ensureConnected
-    def status(self, id_):
+    def status(self, id):
         # This method gets the status of the machine
         # /ous/{uoid}/labs/{labid}/clients/{clientid}/status
         # possible status are ("off", "oglive", "busy", "linux", "windows", "macos" o "unknown").
         # Look at api at informatica.us..
-        ou, lab, client = id_.split('.')
+        ou, lab, client = id.split('.')
         return self._get(urls.STATUS.format(ou=ou, lab=lab, client=client))

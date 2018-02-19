@@ -44,7 +44,6 @@ from uds.REST import Handler
 import logging
 import random
 import string
-import six
 
 logger = logging.getLogger(__name__)
 
@@ -68,19 +67,6 @@ class Login(Handler):
                 username:
                 password:
                 authId or auth or authSmallName: (must include at least one. If multiple are used, precedence is the list order)
-            optional:
-                platform: From what platform are we connecting. If not specified, will try to deduct it from user agent.
-                Valid values:
-                    Linux = 'Linux'
-                    WindowsPhone = 'Windows Phone'
-                    Windows = 'Windows'
-                    Macintosh = 'Mac'
-                    Android = 'Android'
-                    iPad = 'iPad'
-                    iPhone = 'iPhone'
-                Defaults to:
-                    Unknown = 'Unknown'
-
         Result:
             on success: { 'result': 'ok', 'auth': [auth_code] }
             on error: { 'result: 'error', 'error': [error string] }
@@ -96,13 +82,12 @@ class Login(Handler):
             authId = self._params.get('authId', None)
             authSmallName = self._params.get('authSmallName', None)
             authName = self._params.get('auth', None)
-            platform = self._params.get('platform', self._request.os)
 
             username, password = self._params['username'], self._params['password']
             locale = self._params.get('locale', 'en')
             if authName == 'admin' or authSmallName == 'admin':
                 if GlobalConfig.SUPER_USER_LOGIN.get(True) == username and GlobalConfig.SUPER_USER_PASS.get(True) == password:
-                    self.genAuthToken(-1, username, password, locale, platform, True, True, scrambler)
+                    self.genAuthToken(-1, username, password, locale, True, True, scrambler)
                     return{'result': 'ok', 'token': self.getAuthToken()}
                 else:
                     raise Exception('Invalid credentials')
@@ -123,7 +108,7 @@ class Login(Handler):
                     user = authenticate(username, password, auth)
                     if user is None:  # invalid credentials
                         raise Exception()
-                    self.genAuthToken(auth.id, user.name, password, locale, platform, user.is_admin, user.staff_member, scrambler)
+                    self.genAuthToken(auth.id, user.name, password, locale, user.is_admin, user.staff_member, scrambler)
                     return{'result': 'ok', 'token': self.getAuthToken(), 'version': UDS_VERSION, 'scrambler': scrambler }
                 except:
                     logger.exception('Credentials ')
@@ -132,7 +117,7 @@ class Login(Handler):
             raise Exception('Invalid Credentials')
         except Exception as e:
             logger.exception('exception')
-            return {'result': 'error', 'error': six.text_type(e)}
+            return {'result': 'error', 'error': unicode(e)}
 
 
 class Logout(Handler):

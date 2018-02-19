@@ -97,7 +97,6 @@ class RDPTransport(BaseRDPTransport):
         depth = self.colorDepth.value
 
         r = RDPFile(width == '-1' or height == '-1', width, height, depth, target=os['OS'])
-        r.enablecredsspsupport = ci.get('sso', self.credssp.isTrue())
         r.address = '{}:{}'.format(ip, 3389)
         r.username = username
         r.password = password
@@ -113,6 +112,7 @@ class RDPTransport(BaseRDPTransport):
         r.multimon = self.multimon.isTrue()
         r.desktopComposition = self.aero.isTrue()
         r.smoothFonts = self.smooth.isTrue()
+        r.enablecredsspsupport = self.credssp.isTrue()
         r.multimedia = self.multimedia.isTrue()
         r.alsa = self.alsa.isTrue()
         r.smartcardString = self.smartcardString.value
@@ -120,66 +120,48 @@ class RDPTransport(BaseRDPTransport):
         r.linuxCustomParameters = self.customParameters.value
 
         # data
-#         data = {
-#             'os': os['OS'],
-#             'ip': ip,
-#             'port': 3389,
-#             'username': username,
-#             'password': password,
-#             'hasCredentials': username != '' and password != '',
-#             'domain': domain,
-#             'width': width,
-#             'height': height,
-#             'depth': depth,
-#             'printers': self.allowPrinters.isTrue(),
-#             'smartcards': self.allowSmartcards.isTrue(),
-#             'drives': self.allowDrives.isTrue(),
-#             'serials': self.allowSerials.isTrue(),
-#             'compression': True,
-#             'wallpaper': self.wallpaper.isTrue(),
-#             'multimon': self.multimon.isTrue(),
-#             'fullScreen': width == -1 or height == -1,
-#             'this_server': request.build_absolute_uri('/')
-#         }
+        data = {
+            'os': os['OS'],
+            'ip': ip,
+            'port': 3389,
+            'username': username,
+            'password': password,
+            'hasCredentials': username != '' and password != '',
+            'domain': domain,
+            'width': width,
+            'height': height,
+            'depth': depth,
+            'printers': self.allowPrinters.isTrue(),
+            'smartcards': self.allowSmartcards.isTrue(),
+            'drives': self.allowDrives.isTrue(),
+            'serials': self.allowSerials.isTrue(),
+            'compression': True,
+            'wallpaper': self.wallpaper.isTrue(),
+            'multimon': self.multimon.isTrue(),
+            'fullScreen': width == -1 or height == -1,
+            'this_server': request.build_absolute_uri('/'),
+            'r': r,
+        }
+
+        m = tools.DictAsObj(data)
+
+        if m.domain != '':
+            m.usernameWithDomain = '{}\\\\{}'.format(m.domain, m.username)
+        else:
+            m.usernameWithDomain = m.username
+
+        if m.os == OsDetector.Windows:
+            m.r.password = '{password}'
 
         os = {
             OsDetector.Windows: 'windows',
             OsDetector.Linux: 'linux',
             OsDetector.Macintosh: 'macosx'
 
-        }.get(os['OS'])
+        }.get(m.os)
 
         if os is None:
             logger.error('Os not detected for RDP Transport: {}'.format(request.META.get('HTTP_USER_AGENT', 'Unknown')))
             return super(RDPTransport, self).getUDSTransportScript(userService, transport, ip, os, user, password, request)
 
-        sp = {
-            'password': password,
-            'this_server': request.build_absolute_uri('/'),
-        }
-
-        if os == 'windows':
-            if password != '':
-                r.password = '{password}'
-            sp.update({
-                'as_file': r.as_file,
-            })
-        elif os == 'linux':
-            sp.update({
-                'as_new_xfreerdp_params': r.as_new_xfreerdp_params,
-                'as_rdesktop_params': r.as_rdesktop_params,
-                'address': r.address,
-            })
-        else:  # Mac
-            sp.update({
-                'as_file': r.as_file,
-                'ip': ip,
-                'as_cord_url': r.as_cord_url,
-            })
-            if domain != '':
-                sp['usernameWithDomain'] = '{}\\\\{}'.format(domain, username)
-            else:
-                sp['usernameWithDomain'] = username
-
-
-        return self.getScript('scripts/{}/direct.py', os, sp)
+        return self.getScript('scripts/{}/direct.py'.format(os)).format(m=m)

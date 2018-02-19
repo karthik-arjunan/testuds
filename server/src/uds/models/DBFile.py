@@ -34,6 +34,8 @@
 
 from __future__ import unicode_literals
 
+__updated__ = '2017-11-15'
+
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from uds.models.UUIDModel import UUIDModel

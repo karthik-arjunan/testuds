@@ -27,13 +27,12 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.utils import formats
-from django.utils.translation import ugettext
 import django.template.defaultfilters as filters
 
 import datetime
@@ -41,14 +40,14 @@ import datetime
 import sys
 import os
 
-__updated__ = '2017-01-31'
+__updated__ = '2015-05-04'
 
 
 class DictAsObj(object):
-    """
+    '''
     Returns a mix between a dict and an obj
     Can be accesses as .xxxx or ['xxx']
-    """
+    '''
     def __init__(self, dct=None, **kwargs):
         if dct is not None:
             self.__dict__.update(dct)
@@ -64,36 +63,17 @@ class DictAsObj(object):
 
 
 def packageRelativeFile(moduleName, fileName):
-    """
+    '''
     Helper to get image path from relative to a module.
     This allows to keep images alongside report
-    """
+    '''
     pkgpath = os.path.dirname(sys.modules[moduleName].__file__)
     return os.path.join(pkgpath, fileName)
 
 
 def timestampAsStr(stamp, format_='SHORT_DATETIME_FORMAT'):
-    """
+    '''
     Converts a timestamp to date string using specified format (DJANGO format such us SHORT_DATETIME_FORMAT..)
-    """
+    '''
     format_ = formats.get_format(format_)
     return filters.date(datetime.datetime.fromtimestamp(stamp), format_)
-
-def secondsToString(seconds):
-    seconds = int(seconds)
-    minutes = seconds / 60
-    seconds %= 60
-    hours = minutes / 60
-    minutes %= 60
-    days = hours / 24
-    hours %= 24
-    res = []
-    if days > 0:
-        res.append(ugettext('{} days').format(days))
-    if hours > 0:
-        res.append(ugettext('{} hours').format(hours))
-    if minutes > 0:
-        res.append(ugettext('{} minutes').format(minutes))
-    res.append(ugettext('{} seconds').format(seconds))
-
-    return ', '.join(res)

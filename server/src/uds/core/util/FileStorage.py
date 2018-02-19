@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 # pylint: disable=no-name-in-module,import-error, maybe-no-member
 from __future__ import unicode_literals
 
@@ -73,18 +73,17 @@ class FileStorage(Storage):
 
         self.cache._cache.flush_all()  # On start, ensures that cache is empty to avoid surprises
 
-        # noinspection PyArgumentList
         Storage.__init__(self, *args, **kwargs)
 
     def get_valid_name(self, name):
         return name.replace('\\', os.path.sep)
 
     def _getKey(self, name):
-        """
+        '''
             We have only a few files on db, an we are running on a 64 bits system
             memcached does not allow keys bigger than 250 chars, so we are going to use hash() to
             get a key for this
-        """
+        '''
         return 'fstor' + six.text_type(hash(self.get_valid_name(name)))
 
     def _dbFileForReadOnly(self, name):
@@ -162,7 +161,7 @@ class FileStorage(Storage):
     def exists(self, name):
         logger.debug('Called exists for {}'.format(name))
         try:
-            _ = self._dbFileForReadOnly(name).uuid # Tries to access uuid
+            self._dbFileForReadOnly(name).uuid
             return True
         except DBFile.DoesNotExist:
             return False

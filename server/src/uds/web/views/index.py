@@ -25,11 +25,12 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
+from django.shortcuts import render_to_response
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext
@@ -55,25 +56,26 @@ __updated__ = '2017-11-10'
 
 
 def about(request):
-    """
+    '''
     Shows the about page
     :param request: http request
-    """
-    return render(request,
+    '''
+    return render_to_response(
         theme.template('about.html'),
         {
             'version': VERSION,
             'version_stamp': VERSION_STAMP
-        }
+        },
+        context_instance=RequestContext(request)
     )
 
 
 @webLoginRequired(admin=False)
 def index(request):
-    """
+    '''
     Renders the main page.
     :param request: http request
-    """
+    '''
     if request.session.get('ticket') == '1':
         return webLogout(request)
 
@@ -229,8 +231,7 @@ def index(request):
 
     logger.debug('Groups: {}'.format(groups))
 
-    response = render(
-        request,
+    response = render_to_response(
         theme.template('index.html'),
         {
             'groups': groups,
@@ -239,6 +240,7 @@ def index(request):
             'nets': nets,
             'transports': validTrans,
             'autorun': autorun
-        }
+        },
+        context_instance=RequestContext(request)
     )
     return response

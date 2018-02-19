@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from uds.core import services
@@ -39,6 +39,7 @@ class PhysicalMachinesProvider(services.ServiceProvider):
     # No extra data needed
 
     # What services do we offer?
+    offers = []
     typeName = 'Static IP Machines Provider'
     typeType = 'PhysicalMachinesServiceProvider'
     typeDescription = 'Provides connection to machines by IP'

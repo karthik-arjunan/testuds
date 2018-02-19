@@ -51,7 +51,6 @@ from uds.models.Group import Group
 from uds.models.Image import Image
 from uds.models.ServicesPoolGroup import ServicesPoolGroup
 from uds.models.Calendar import Calendar
-from uds.models.Account import Account
 
 from uds.models.Util import NEVER
 from uds.models.Util import getSqlDatetime
@@ -66,6 +65,7 @@ import six
 __updated__ = '2017-11-29'
 
 logger = logging.getLogger(__name__)
+
 
 @python_2_unicode_compatible
 class DeployedService(UUIDModel, TaggingMixin):
@@ -83,7 +83,6 @@ class DeployedService(UUIDModel, TaggingMixin):
     state = models.CharField(max_length=1, default=states.servicePool.ACTIVE, db_index=True)
     state_date = models.DateTimeField(default=NEVER)
     show_transports = models.BooleanField(default=True)
-    visible = models.BooleanField(default=True)
     allow_users_remove = models.BooleanField(default=False)
     ignores_unused = models.BooleanField(default=False)
     image = models.ForeignKey(Image, null=True, blank=True, related_name='deployedServices', on_delete=models.SET_NULL)
@@ -95,15 +94,11 @@ class DeployedService(UUIDModel, TaggingMixin):
     fallbackAccess = models.CharField(default=states.action.ALLOW, max_length=8)
     actionsCalendars = models.ManyToManyField(Calendar, related_name='actionsSP', through='CalendarAction')
 
-    # Usage accounting
-    account = models.ForeignKey(Account, null=True, blank=True, related_name='servicesPools')
-
     initial_srvs = models.PositiveIntegerField(default=0)
     cache_l1_srvs = models.PositiveIntegerField(default=0)
     cache_l2_srvs = models.PositiveIntegerField(default=0)
     max_srvs = models.PositiveIntegerField(default=0)
     current_pub_revision = models.PositiveIntegerField(default=1)
-
 
     # Meta service related
     meta_pools = models.ManyToManyField('self', symmetrical=False)
@@ -206,13 +201,10 @@ class DeployedService(UUIDModel, TaggingMixin):
     def isInMaintenance(self):
         return self.service is not None and self.service.isInMaintenance()
 
-    def isVisible(self):
-        return self.visible
-
     def toBeReplaced(self):
         # return datetime.now()
         activePub = self.activePublication()
-        if activePub is None or activePub.revision <= self.current_pub_revision - 1:
+        if activePub is None or activePub.revision == self.current_pub_revision - 1:
             return None
 
         # Return the date
@@ -350,9 +342,8 @@ class DeployedService(UUIDModel, TaggingMixin):
         for ap in self.publications.exclude(id=activePub.id):
             for u in ap.userServices.filter(state=states.userService.PREPARING):
                 u.cancel()
-            with transaction.atomic():
-                ap.userServices.exclude(cache_level=0).filter(state=states.userService.USABLE).update(state=states.userService.REMOVABLE, state_date=now)
-                ap.userServices.filter(cache_level=0, state=states.userService.USABLE, in_use=False).update(state=states.userService.REMOVABLE, state_date=now)
+            ap.userServices.exclude(cache_level=0).filter(state=states.userService.USABLE).update(state=states.userService.REMOVABLE, state_date=now)
+            ap.userServices.filter(cache_level=0, state=states.userService.USABLE, in_use=False).update(state=states.userService.REMOVABLE, state_date=now)
 
     def validateGroups(self, grps):
         '''
@@ -401,14 +392,6 @@ class DeployedService(UUIDModel, TaggingMixin):
         self.validatePublication()
         return True
 
-    # Stores usage accounting information
-    def saveAccounting(self, userService, start, end):
-        if self.account is None:
-            return None
-
-        return self.account.addUsageAccount(userService, start, end)
-
-
     @staticmethod
     def getDeployedServicesForGroups(groups):
         '''
@@ -423,10 +406,10 @@ class DeployedService(UUIDModel, TaggingMixin):
         from uds.core import services
         # Get services that HAS publications
         list1 = DeployedService.objects.filter(assignedGroups__in=groups, assignedGroups__state=states.group.ACTIVE,
-                                               state=states.servicePool.ACTIVE, visible=True).distinct().annotate(cuenta=models.Count('publications')).exclude(cuenta=0)
+                                               state=states.servicePool.ACTIVE).distinct().annotate(cuenta=models.Count('publications')).exclude(cuenta=0)
         # Now get deployed services that DO NOT NEED publication
         doNotNeedPublishing = [t.type() for t in services.factory().servicesThatDoNotNeedPublication()]
-        list2 = DeployedService.objects.filter(assignedGroups__in=groups, assignedGroups__state=states.group.ACTIVE, service__data_type__in=doNotNeedPublishing, state=states.servicePool.ACTIVE, visible=True)
+        list2 = DeployedService.objects.filter(assignedGroups__in=groups, assignedGroups__state=states.group.ACTIVE, service__data_type__in=doNotNeedPublishing, state=states.servicePool.ACTIVE)
         # And generate a single list without duplicates
         return list(set([r for r in list1] + [r for r in list2]))
 
@@ -476,9 +459,6 @@ class DeployedService(UUIDModel, TaggingMixin):
         If it don't has an user associated, the user deployed service is wrong.
         '''
         return self.userServices.filter(cache_level=0, user=None)
-
-    def testServer(self, host, port, timeout=4):
-        return self.service.testServer(host, port, timeout)
 
     @staticmethod
     def beforeDelete(sender, **kwargs):

@@ -48,7 +48,6 @@ from .services_pool_calendars import AccessCalendars, ActionsCalendars
 from .services import Services
 from uds.core.managers import userServiceManager
 
-import six
 import logging
 
 logger = logging.getLogger(__name__)
@@ -82,7 +81,6 @@ class ServicesPools(ModelHandler):
         {'state': {'title': _('status'), 'type': 'dict', 'dict': State.dictionary()}},
         {'user_services_count': {'title': _('User services'), 'type': 'number'}},
         {'user_services_in_preparation': {'title': _('In Preparation')}},
-        {'visible': {'title': _('Visible'), 'type': 'callback'}},
         {'show_transports': {'title': _('Shows transports'), 'type': 'callback'}},
         {'pool_group_name': {'title': _('Pool Group')}},
         {'parent': {'title': _('Parent Service')}},
@@ -92,7 +90,6 @@ class ServicesPools(ModelHandler):
     table_row_style = {'field': 'state', 'prefix': 'row-state-'}
 
     custom_methods = [('setFallbackAccess', True), ('actionsList', True)]
-
 
     def item_as_dict(self, item):
         # if item does not have an associated service, hide it (the case, for example, for a removed service)
@@ -122,12 +119,10 @@ class ServicesPools(ModelHandler):
             'comments': item.comments,
             'state': state,
             'thumb': item.image.thumb64 if item.image is not None else DEFAULT_THUMB_BASE64,
-            'account': item.account.name if item.account is not None else '',
             'service_id': item.service.uuid,
             'provider_id': item.service.provider.uuid,
             'image_id': item.image.uuid if item.image is not None else None,
             'servicesPoolGroup_id': poolGroupId,
-            'account_id': item.account.uuid if item.account is not None else None,
             'pool_group_name': poolGroupName,
             'pool_group_thumb': poolGroupThumb,
             'initial_srvs': item.initial_srvs,
@@ -138,7 +133,6 @@ class ServicesPools(ModelHandler):
             'user_services_in_preparation': item.userServices.filter(state=State.PREPARING).count(),
             'restrained': item.isRestrained(),
             'show_transports': item.show_transports,
-            'visible': item.visible,
             'allow_users_remove': item.allow_users_remove,
             'ignores_unused': item.ignores_unused,
             'fallbackAccess': item.fallbackAccess,
@@ -217,14 +211,6 @@ class ServicesPools(ModelHandler):
             'order': 121,
             'tab': ugettext('Display'),
         }, {
-            'name': 'visible',
-            'value': True,
-            'label': ugettext('Visible'),
-            'tooltip': ugettext('If active, transport will be visible for users'),
-            'type': gui.InputField.CHECKBOX_TYPE,
-            'order': 107,
-            'tab': ugettext('Display'),
-        }, {
             'name': 'initial_srvs',
             'value': '0',
             'minValue': '0',
@@ -260,33 +246,7 @@ class ServicesPools(ModelHandler):
             'type': gui.InputField.NUMERIC_TYPE,
             'order': 133,
             'tab': ugettext('Availability'),
-        }, {
-            'name': 'show_transports',
-            'value': True,
-            'label': ugettext('Show transports'),
-            'tooltip': ugettext('If active, alternative transports for user will be shown'),
-            'type': gui.InputField.CHECKBOX_TYPE,
-            'tab': ugettext('Advanced'),
-            'order': 130,
-        }, {
-            'name': 'account_id',
-            'values': [gui.choiceItem(-1, '')] + gui.sortedChoices([gui.choiceItem(v.uuid, v.name) for v in Account.objects.all()]),
-            'label': ugettext('Account'),
-            'tooltip': ugettext('Account associated to this service pool'),
-            'type': gui.InputField.CHOICE_TYPE,
-            'tab': ugettext('Advanced'),
-            'order': 131,
-        },{
-            'name': 'allow_users_remove',
-            'value': False,
-            'label': ugettext('Allow removal by users'),
-            'tooltip': ugettext('If active, the user will be allowed to remove the service "manually". Be care with this, because the user will have the "poser" to delete it\'s own service'),
-            'type': gui.InputField.CHECKBOX_TYPE,
-            'tab': ugettext('Advanced'),
-            'order': 131,
-        }
-
-        ]:
+        }]:
             self.addField(g, f)
 
         return g
@@ -312,15 +272,6 @@ class ServicesPools(ModelHandler):
                 else:
                     del fields['osmanager_id']
 
-                if serviceType.cacheConstrains is not None:
-                    for k, v in six.iteritems(serviceType.cacheConstrains):
-                        fields[k] = v
-
-                if serviceType.maxDeployed != -1:
-                    fields['max_srvs'] = min((int(fields['max_srvs']), serviceType.maxDeployed))
-                    fields['initial_srvs'] = min(int(fields['initial_srvs']), serviceType.maxDeployed)
-                    fields['cache_l1_srvs'] = min(int(fields['cache_l1_srvs']), serviceType.maxDeployed)
-
                 if serviceType.usesCache is False:
                     for k in ('initial_srvs', 'cache_l1_srvs', 'cache_l2_srvs', 'max_srvs'):
                         fields[k] = 0
@@ -328,23 +279,9 @@ class ServicesPools(ModelHandler):
             except Exception:
                 raise RequestError(ugettext('This service requires an OS Manager'))
 
-
             # If max < initial or cache_1 or cache_l2
             fields['max_srvs'] = max((int(fields['initial_srvs']), int(fields['cache_l1_srvs']), int(fields['max_srvs'])))
 
-
-            # *** ACCOUNT ***
-            accountId = fields['account_id']
-            fields['account_id'] = None
-            logger.debug('Account id: {}'.format(accountId))
-
-            if accountId != '-1':
-                try:
-                    fields['account_id'] = Account.objects.get(uuid=processUuid(accountId)).id
-                except Exception:
-                    logger.exception('Getting account ID')
-
-            # **** IMAGE ***
             imgId = fields['image_id']
             fields['image_id'] = None
             logger.debug('Image id: {}'.format(imgId))
@@ -373,10 +310,7 @@ class ServicesPools(ModelHandler):
 
     def afterSave(self, item):
         if self._params.get('publish_on_save', False) is True:
-            try:
-                item.publish()
-            except Exception:
-                pass
+            item.publish()
 
     def deleteItem(self, item):
         item.remove()  # This will mark it for deletion, but in fact will not delete it directly

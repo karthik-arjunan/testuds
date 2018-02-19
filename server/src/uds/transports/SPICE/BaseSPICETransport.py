@@ -114,7 +114,6 @@ class BaseSpiceTransport(Transport):
         tab=gui.ADVANCED_TAB
     )
 
-
     def isAvailableFor(self, userService, ip):
         '''
         Checks if the transport is available for the requested destination ip
@@ -144,7 +143,7 @@ class BaseSpiceTransport(Transport):
                            'Could not reach server "{}" on port "{}" from broker (prob. causes are name resolution & firewall rules)'.format(con['address'], port_to_test),
                            120)
 
-            if self.testServer(userService, con['address'], port_to_test) is True:
+            if connection.testServer(con['address'], port_to_test) is True:
                 self.cache.put(ip, 'Y', READY_CACHE_TIMEOUT)
                 ready = 'Y'
 

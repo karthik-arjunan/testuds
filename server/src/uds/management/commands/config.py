@@ -27,12 +27,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
-import six
 from django.core.management.base import BaseCommand
 from uds.core.util.Config import Config, GLOBAL_SECTION, GlobalConfig
 import logging
@@ -44,14 +43,11 @@ class Command(BaseCommand):
     args = "<mod.name=value mod.name=value mod.name=value...>"
     help = "Updates configuration values. If mod is omitted, UDS will be used. Omit whitespaces betwen name, =, and value (they must be a single param)"
 
-    def add_arguments(self, parser):
-        parser.add_argument('name_value', nargs='+', type=six.text_type)
-
     def handle(self, *args, **options):
         logger.debug("Handling settings")
         GlobalConfig.initialize()
         try:
-            for param in options['name_value']:
+            for param in args:
                 config = param.decode('utf-8')
                 logger.debug('Config: {}'.format(config))
                 first, value = config.split('=')

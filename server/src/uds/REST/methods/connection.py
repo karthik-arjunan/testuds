@@ -112,7 +112,6 @@ class Connection(Handler):
                              'not_accesible': not servicePool.isAccessAllowed(),
                              'to_be_replaced': False,  # Manually assigned will not be autoremoved never
                              'transports': trans,
-                             'maintenance': svr.isInMaintenance(),
                              'in_use': svr.in_use})
 
         logger.debug(services)
@@ -143,7 +142,6 @@ class Connection(Handler):
                              'not_accesible': not servicePool.isAccessAllowed(),
                              'to_be_replaced': servicePool.toBeReplaced(),
                              'transports': trans,
-                             'maintenance': svr.isInMaintenance(),
                              'in_use': in_use})
 
         logger.debug('Services: {0}'.format(services))

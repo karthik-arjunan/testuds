@@ -54,6 +54,7 @@ logger = logging.getLogger(__name__)
 READY_CACHE_TIMEOUT = 30
 SSH_KEY_LENGTH = 1024
 
+
 class BaseX2GOTransport(Transport):
     '''
     Provides access via X2GO to service.

@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 # pylint: disable=too-many-public-methods
 
 from __future__ import unicode_literals
@@ -49,37 +49,37 @@ AUTH_TOKEN_HEADER = 'HTTP_X_AUTH_TOKEN'
 
 
 class HandlerError(Exception):
-    """
+    '''
     Generic error for a REST handler
-    """
+    '''
     pass
 
 
 class NotFound(HandlerError):
-    """
+    '''
     Item not found error
-    """
+    '''
     pass
 
 
 class AccessDenied(HandlerError):
-    """
+    '''
     Access denied error
-    """
+    '''
     pass
 
 
 class RequestError(HandlerError):
-    """
+    '''
     Request is invalid error
-    """
+    '''
     pass
 
 
 class ResponseError(HandlerError):
-    """
+    '''
     Generic response error
-    """
+    '''
     pass
 
 
@@ -179,7 +179,7 @@ class Handler(object):
         return self._authToken
 
     @staticmethod
-    def storeSessionAuthdata(session, id_auth, username, password, locale, platform, is_admin, staff_member, scrambler):
+    def storeSessionAuthdata(session, id_auth, username, password, locale, is_admin, staff_member, scrambler):
         '''
         Stores the authentication data inside current session
         :param session: session handler (Djano user session object)
@@ -197,12 +197,11 @@ class Handler(object):
             'username': username,
             'password': cryptoManager().xor(password, scrambler),  # Stores "bytes"
             'locale': locale,
-            'platform': platform,
             'is_admin': is_admin,
             'staff_member': staff_member
         }
 
-    def genAuthToken(self, id_auth, username, password, locale, platform, is_admin, staf_member, scrambler):
+    def genAuthToken(self, id_auth, username, password, locale, is_admin, staf_member, scrambler):
         '''
         Generates the authentication token from a session, that is basically
         the session key itself
@@ -214,7 +213,7 @@ class Handler(object):
         '''
         session = SessionStore()
         session.set_expiry(GlobalConfig.ADMIN_IDLE_TIME.getInt())
-        Handler.storeSessionAuthdata(session, id_auth, username, password, locale, platform, is_admin, staf_member, scrambler)
+        Handler.storeSessionAuthdata(session, id_auth, username, password, locale, is_admin, staf_member, scrambler)
         session.save()
         self._authToken = session.session_key
         self._session = session

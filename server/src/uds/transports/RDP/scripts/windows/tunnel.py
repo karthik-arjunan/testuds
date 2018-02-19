@@ -14,24 +14,24 @@ from uds import tools  # @UnresolvedImport
 
 import six
 
-forwardThread, port = forward(sp['tunHost'], sp['tunPort'], sp['tunUser'], sp['tunPass'], sp['ip'], 3389, waitTime=sp['tunWait'])  # @UndefinedVariable
+forwardThread, port = forward('{m.tunHost}', '{m.tunPort}', '{m.tunUser}', '{m.tunPass}', '{m.ip}', 3389, waitTime={m.tunWait})  # @UndefinedVariable
 
 if forwardThread.status == 2:
     raise Exception('Unable to open tunnel')
 
 tools.addTaskToWait(forwardThread)
 
-thePass = six.binary_type('{m.password}'.encode('UTF-16LE'))
 try:
+    thePass = six.binary_type('{m.password}'.encode('UTF-16LE'))
     password = win32crypt.CryptProtectData(thePass, None, None, None, None, 0x01).encode('hex')
 except Exception:
-    # Cannot encrypt for user, trying for machine
+    logger.info('Cannot encrypt for user, trying for machine')
     password = win32crypt.CryptProtectData(thePass, None, None, None, None, 0x05).encode('hex')
 
 # The password must be encoded, to be included in a .rdp file, as 'UTF-16LE' before protecting (CtrpyProtectData) it in order to work with mstsc
-theFile = sp['as_file'].format(# @UndefinedVariable
+theFile = '''{m.r.as_file}'''.format(
     password=password,
-    address='127.0.0.1:{}'.format(port)
+    address='127.0.0.1:{{}}'.format(port)
 )
 
 filename = tools.saveTempFile(theFile)
@@ -41,3 +41,5 @@ if executable is None:
 
 subprocess.Popen([executable, filename])
 tools.addFileToUnlink(filename)
+
+# QtGui.QMessageBox.critical(parent, 'Notice', filename + ", " + executable, QtGui.QMessageBox.Ok)

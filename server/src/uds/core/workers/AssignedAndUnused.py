@@ -27,18 +27,19 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
-import logging
-from datetime import timedelta
+from django.db import transaction
 
-from uds.core.jobs.Job import Job
 from uds.core.util.Config import GlobalConfig
-from uds.core.util.State import State
 from uds.models import DeployedService, getSqlDatetime
+from uds.core.util.State import State
+from uds.core.jobs.Job import Job
+from datetime import timedelta
+import logging
 
 logger = logging.getLogger(__name__)
 

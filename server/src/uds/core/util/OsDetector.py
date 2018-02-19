@@ -27,13 +27,12 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 import re
-import six
 import logging
 from .tools import DictAsObj
 
@@ -45,8 +44,8 @@ WindowsPhone = 'Windows Phone'
 Windows = 'Windows'
 Macintosh = 'Mac'
 Android = 'Android'
-iPad = 'iPad'  #
-iPhone = 'iPhone'  # In fact, these are IOS both, but we can diferentiate it...
+iPad = 'iPad'
+iPhone = 'iPhone'
 Unknown = 'Unknown'
 
 knownOss = (WindowsPhone, Android, Linux, Windows, Macintosh, iPad, iPhone)  # Android is linux also, so it is cheched on first place
@@ -91,9 +90,9 @@ browserRules = {
 
 
 def getOsFromUA(ua):
-    """
+    '''
     Basic OS Client detector (very basic indeed :-))
-    """
+    '''
     if ua is None:
         ua = Unknown
 
@@ -110,8 +109,7 @@ def getOsFromUA(ua):
 
     match = None
 
-    ruleKey, ruleValue = None, None
-    for ruleKey, ruleValue in six.iteritems(browserRules):
+    for ruleKey, ruleValue in browserRules.iteritems():
         must, mustNot = ruleValue
 
         for mustRe in browsersREs[must]:

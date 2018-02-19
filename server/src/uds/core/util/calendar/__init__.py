@@ -112,7 +112,6 @@ class CalendarChecker(object):
 
         return data
 
-
     def _updateEvents(self, checkFrom, startEvent=True):
 
         next_event = None

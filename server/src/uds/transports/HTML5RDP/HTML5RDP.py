@@ -139,7 +139,7 @@ class HTML5RDPTransport(Transport):
         ready = self.cache.get(ip)
         if ready is None:
             # Check again for readyness
-            if self.testServer(userService, ip, '3389') is True:
+            if connection.testServer(ip, '3389') is True:
                 self.cache.put(ip, 'Y', READY_CACHE_TIMEOUT)
                 return True
             else:

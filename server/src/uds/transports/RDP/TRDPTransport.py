@@ -125,7 +125,6 @@ class TRDPTransport(BaseRDPTransport):
         logger.debug('Username generated: {0}, password: {1}'.format(tunuser, tunpass))
 
         r = RDPFile(width == '-1' or height == '-1', width, height, depth, target=os['OS'])
-        r.enablecredsspsupport = ci.get('sso', self.credssp.isTrue())
         r.address = '{address}'
         r.username = username
         r.password = password
@@ -141,6 +140,7 @@ class TRDPTransport(BaseRDPTransport):
         r.multimon = self.multimon.isTrue()
         r.desktopComposition = self.aero.isTrue()
         r.smoothFonts = self.smooth.isTrue()
+        r.enablecredsspsupport = self.credssp.isTrue()
         r.multimedia = self.multimedia.isTrue()
         r.alsa = self.alsa.isTrue()
         r.smartcardString = self.smartcardString.value
@@ -148,55 +148,52 @@ class TRDPTransport(BaseRDPTransport):
         r.linuxCustomParameters = self.customParameters.value
 
         # data
-#         data = {
-#             'os': os['OS'],
-#             'ip': ip,
-#             'tunUser': tunuser,
-#             'tunPass': tunpass,
-#             'tunHost': sshHost,
-#             'tunPort': sshPort,
-#             'tunWait': self.tunnelWait.num(),
-#             'username': username,
-#             'password': password,
-#             'hasCredentials': username != '' and password != '',
-#             'domain': domain,
-#             'width': width,
-#             'height': height,
-#             'depth': depth,
-#             'printers': self.allowPrinters.isTrue(),
-#             'smartcards': self.allowSmartcards.isTrue(),
-#             'drives': self.allowDrives.isTrue(),
-#             'serials': self.allowSerials.isTrue(),
-#             'compression': True,
-#             'wallpaper': self.wallpaper.isTrue(),
-#             'multimon': self.multimon.isTrue(),
-#             'fullScreen': width == -1 or height == -1,
-#             'this_server': request.build_absolute_uri('/'),
-#             'r': r,
-#         }
+        data = {
+            'os': os['OS'],
+            'ip': ip,
+            'tunUser': tunuser,
+            'tunPass': tunpass,
+            'tunHost': sshHost,
+            'tunPort': sshPort,
+            'tunWait': self.tunnelWait.num(),
+            'username': username,
+            'password': password,
+            'hasCredentials': username != '' and password != '',
+            'domain': domain,
+            'width': width,
+            'height': height,
+            'depth': depth,
+            'printers': self.allowPrinters.isTrue(),
+            'smartcards': self.allowSmartcards.isTrue(),
+            'drives': self.allowDrives.isTrue(),
+            'serials': self.allowSerials.isTrue(),
+            'compression': True,
+            'wallpaper': self.wallpaper.isTrue(),
+            'multimon': self.multimon.isTrue(),
+            'fullScreen': width == -1 or height == -1,
+            'this_server': request.build_absolute_uri('/'),
+            'r': r,
+        }
+
+        m = tools.DictAsObj(data)
+
+        if m.domain != '':
+            m.usernameWithDomain = '{}\\\\{}'.format(m.domain, m.username)
+        else:
+            m.usernameWithDomain = m.username
+
+        if m.os == OsDetector.Windows:
+            r.password = '{password}'
 
         os = {
             OsDetector.Windows: 'windows',
             OsDetector.Linux: 'linux',
             OsDetector.Macintosh: 'macosx'
 
-        }.get(os['OS'])
+        }.get(m.os)
 
         if os is None:
-            return super(self.__class__, self).getUDSTransportScript(userService, transport, ip, os, user, password, request)
+            logger.error('Os not detected for RDP Transport: {}'.format(request.META.get('HTTP_USER_AGENT', 'Unknown')))
+            return super(TRDPTransport, self).getUDSTransportScript(self, userService, transport, ip, os, user, password, request)
 
-
-        sp = {
-            'tunUser': tunuser,
-            'tunPass': tunpass,
-            'tunHost': sshHost,
-            'tunPort': sshPort,
-            'tunWait': self.tunnelWait.num(),
-            'ip': ip,
-            'password': password,
-            'this_server': request.build_absolute_uri('/'),
-        }
-
-        m = tools.DictAsObj(data)
-
-        return self.getScript('scripts/{}/tunnel.py', os, sp)
+        return self.getScript('scripts/{}/tunnel.py'.format(os)).format(m=m)

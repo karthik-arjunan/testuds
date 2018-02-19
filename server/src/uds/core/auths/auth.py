@@ -53,7 +53,7 @@ from uds.models import User
 import logging
 import six
 
-__updated__ = '2018-01-05'
+__updated__ = '2017-11-22'
 
 logger = logging.getLogger(__name__)
 authLogger = logging.getLogger('authLog')
@@ -70,7 +70,7 @@ def getUDSCookie(request, response=None, force=False):
     if 'uds' not in request.COOKIES:
         import random
         import string
-        cookie = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))  # @UndefinedVariable
+        cookie = ''.join(random.choice(string.letters + string.digits) for _ in range(32))  # @UndefinedVariable
         if response is not None:
             response.set_cookie('uds', cookie)
         request.COOKIES['uds'] = cookie
@@ -287,7 +287,7 @@ def webLogin(request, response, user, password):
     request.session[USER_KEY] = user.id
     request.session[PASS_KEY] = CryptoManager.manager().xor(password, cookie)  # Stores "bytes"
     # Ensures that this user will have access through REST api if logged in through web interface
-    REST.Handler.storeSessionAuthdata(request.session, manager_id, user.name, password, get_language(), request.os, user.is_admin, user.staff_member, cookie)
+    REST.Handler.storeSessionAuthdata(request.session, manager_id, user.name, password, get_language(), user.is_admin, user.staff_member, cookie)
     return True
 
 

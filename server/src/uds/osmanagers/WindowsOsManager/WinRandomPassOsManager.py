@@ -5,16 +5,16 @@
 # All rights reserved.
 #
 
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_noop as _
 from uds.core.ui.UserInterface import gui
 from uds.core.managers.CryptoManager import CryptoManager
 from uds.core import osmanagers
-from .WindowsOsManager import WindowsOsManager
+from WindowsOsManager import WindowsOsManager
 from uds.core.util import log
 
 import logging
@@ -54,10 +54,8 @@ class WinRandomPassManager(WindowsOsManager):
 
     def processUserPassword(self, service, username, password):
         if username == self._userAccount:
-            password = service.recoverValue('winOsRandomPass')
-
-        return WindowsOsManager.processUserPassword(self, service, username, password)
-
+            return [username, service.recoverValue('winOsRandomPass')]
+        return [username, password]
 
     def genPassword(self, service):
         import random

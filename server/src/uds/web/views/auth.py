@@ -25,47 +25,51 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
+'''
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from __future__ import unicode_literals
 
-import logging
-
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
-from django.shortcuts import render
 from django.utils.translation import ugettext as _
-from django.views.decorators.cache import never_cache
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.views.decorators.csrf import csrf_exempt
+from django.core.urlresolvers import reverse
+from django.views.decorators.cache import never_cache
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
+from uds.core.auths.auth import webLogin, webLogout, authenticateViaCallback, authLogLogin, getUDSCookie
+from uds.models import Authenticator, DeployedService
+from uds.core.managers import userServiceManager
+from uds.core.util import html
+from uds.core.util import OsDetector
+from uds.core.util.State import State
+from uds.core.ui import theme
+
+from uds.models import TicketStore
+
+from uds.core.auths.Exceptions import InvalidUserException
+from uds.core.services.Exceptions import InvalidServiceException, ServiceNotReadyError
 
 import uds.web.errors as errors
-from uds.core.auths.Exceptions import InvalidUserException
-from uds.core.auths.auth import webLogin, webLogout, authenticateViaCallback, authLogLogin, getUDSCookie
-from uds.core.managers import userServiceManager
-from uds.core.services.Exceptions import InvalidServiceException, ServiceNotReadyError
-from uds.core.ui import theme
-from uds.core.util import OsDetector
-from uds.core.util import html
-from uds.core.util.State import State
-from uds.models import Authenticator, DeployedService
-from uds.models import TicketStore
+
+import logging
 
 logger = logging.getLogger(__name__)
 
 
-__updated__ = '2017-02-14'
+__updated__ = '2016-11-22'
 
 
 @csrf_exempt
 def authCallback(request, authName):
-    """
+    '''
     This url is provided so external SSO authenticators can get an url for
     redirecting back the users.
 
     This will invoke authCallback of the requested idAuth and, if this represents
     an authenticator that has an authCallback
-    """
+    '''
     from uds.core import auths
     try:
         authenticator = Authenticator.objects.get(name=authName)
@@ -107,12 +111,12 @@ def authCallback(request, authName):
 
 @csrf_exempt
 def authInfo(request, authName):
-    """
+    '''
     This url is provided so authenticators can provide info (such as SAML metadata)
 
     This will invoke getInfo on requested authName. The search of the authenticator is done
     by name, so it's easier to access from external sources
-    """
+    '''
     from uds.core import auths
     try:
         authenticator = Authenticator.objects.get(name=authName)
@@ -138,9 +142,9 @@ def authInfo(request, authName):
 
 @never_cache
 def ticketAuth(request, ticketId):
-    """
+    '''
     Used to authenticate an user via a ticket
-    """
+    '''
     try:
         data = TicketStore.get(ticketId, invalidate=True)
 
@@ -200,12 +204,12 @@ def ticketAuth(request, ticketId):
             else:
                 link = html.udsAccessLink(request, 'A' + userService.uuid, transport.uuid)
 
-            response = render(
-                request,
+            response = render_to_response(
                 theme.template('simpleLauncher.html'),
                 {
                     'link': link
-                }
+                },
+                context_instance=RequestContext(request)
             )
         else:
             response = HttpResponsePermanentRedirect(reverse('uds.web.views.index'))
@@ -214,19 +218,19 @@ def ticketAuth(request, ticketId):
         getUDSCookie(request, response, True)
         return response
     except ServiceNotReadyError as e:
-        return render(
-            request,
+        return render_to_response(
             theme.template('service_not_ready.html'),
             {
                 'fromLauncher': True,
                 'code': e.code
-            }
+            },
+            context_instance=RequestContext(request)
         )
 
     except TicketStore.InvalidTicket:
-        return render(
-            request,
-            theme.template('simpleLauncherAlreadyLaunched.html')
+        return render_to_response(
+            theme.template('simpleLauncherAlreadyLaunched.html'),
+            context_instance=RequestContext(request)
         )
     except Authenticator.DoesNotExist:
         logger.error('Ticket has an non existing authenticator')

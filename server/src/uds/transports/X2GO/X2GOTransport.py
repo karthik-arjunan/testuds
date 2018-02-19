@@ -118,6 +118,6 @@ class X2GOTransport(BaseX2GOTransport):
         }.get(m.os)
 
         if os is None:
-            return super(self.__class__, self).getUDSTransportScript(userService, transport, ip, os, user, password, request)
+            return super(X2GOTransport, self).getUDSTransportScript(self, userService, transport, ip, os, user, password, request)
 
         return self.getScript('scripts/{}/direct.py'.format(os)).format(m=m)

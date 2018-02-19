@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2016 Virtual Cable S.L.
+# Copyright (c) 2012 Virtual Cable S.L.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
+'''
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 # pylint: disable=maybe-no-member,protected-access
 from django.utils.translation import ugettext as _
 
@@ -65,7 +65,7 @@ def ensureResponseIsValid(response, errMsg=None):
     if response.ok is False:
         try:
             _x, err = response.json().popitem()  # Extract any key, in case of error is expected to have only one top key so this will work
-            errMsg += ': {message}'.format(**err)
+            errMsg = errMsg + ': {message}'.format(**err)
         except Exception:
             pass  # If error geting error message, simply ignore it (will be loged on service log anyway)
         if errMsg is None:
@@ -399,10 +399,10 @@ class Client(object):
 
     @authProjectRequired
     def getSnapshot(self, snapshotId):
-        """
+        '''
         States are:
             creating, available, deleting, error,  error_deleting
-        """
+        '''
         r = requests.get(self._getEndpointFor('volumev2') + '/snapshots/{snapshot_id}'.format(snapshot_id=snapshotId),
                          headers=self._requestHeaders(),
                          verify=VERIFY_SSL,

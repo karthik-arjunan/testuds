@@ -33,20 +33,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 def __init__():
-    """
+    '''
     This imports all packages that are descendant of this package, and, after that,
     it register all subclases of service provider as
-    """
-    import os.path
-    import pkgutil
+    '''
+    import os.path, pkgutil
     import sys
     logger.debug('Initializing plugins')
 
     # Dinamycally import children of this package. The __init__.py files must import classes
     pkgpath = os.path.dirname(sys.modules[__name__].__file__)
     for _, name, _ in pkgutil.iter_modules([pkgpath]):
-        __import__(name, globals(), locals(), [], 1)
+        __import__(name, globals(), locals(), [], -1)
 
 __init__()

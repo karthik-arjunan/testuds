@@ -31,20 +31,16 @@
 @author: Adolfo Gómez, dkmaster at dkmon dot com
 '''
 
-from __future__ import unicode_literals
-
 from uds.core.Serializable import Serializable
 from uds.core.util import encoders
 import pickle
 import timeit
-import six
 
 
 class Attribute(object):
 
     def __init__(self, theType, value=None):
         self._type = theType
-        self._value = None
         self.setValue(value)
 
     def getType(self):
@@ -73,7 +69,6 @@ class AutoAttributes(Serializable):
     '''
 
     def __init__(self, **kwargs):
-        self.dict = None
         self.declare(**kwargs)
 
     def __getattribute__(self, name):
@@ -89,7 +84,7 @@ class AutoAttributes(Serializable):
 
     def declare(self, **kwargs):
         d = {}
-        for key, typ in six.iteritems(kwargs):
+        for key, typ in kwargs.iteritems():
             d[key] = Attribute(typ)
         self.dict = d
 
@@ -97,19 +92,19 @@ class AutoAttributes(Serializable):
         return encoders.encode('\2'.join(['%s\1%s' % (k, pickle.dumps(v)) for k, v in self.dict.iteritems()]), 'bz2')
 
     def unmarshal(self, data):
-        if data == b'':  # Can be empty
+        if data == '':  # Can be empty
             return
         # We keep original data (maybe incomplete)
         try:
             data = encoders.decode(data, 'bz2')
         except Exception:  # With old zip encoding
             data = encoders.decode(data, 'zip')
-        for pair in data.split(b'\2'):
-            k, v = pair.split(b'\1')
-            self.dict[k] = pickle.loads(v)
+        for pair in data.split('\2'):
+            k, v = pair.split('\1')
+            self.dict[k] = pickle.loads(str(v))
 
     def __str__(self):
         str_ = '<AutoAttribute '
-        for k, v in six.iteritems(self.dict):
+        for k, v in self.dict.iteritems():
             str_ += "%s (%s) = %s" % (k, v.getType(), v.getStrValue())
         return str_ + '>'

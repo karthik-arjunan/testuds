@@ -174,11 +174,6 @@ class HTTPServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         # TODO: Return something useful? :)
         return 'Up and running'
 
-    def get_refresh(self, params):
-        '''
-        Requests a refresh of own information offered from UDS Server
-        '''
-
     def get_uuid(self, params):
         return self.service.api.uuid
 

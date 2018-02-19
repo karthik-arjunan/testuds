@@ -28,12 +28,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-"""
+'''
 
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-"""
+'''
 from uds.core.util.Config import Config
-from .Authenticator import IPAuth
+from Authenticator import IPAuth
+
+__updated__ = '2014-02-19'
 
 # Access configuration value as soon as we can, so it is available at db
 Config.section('IPAUTH').value('autoLogin', '0').get()  # If 1, try to autologin

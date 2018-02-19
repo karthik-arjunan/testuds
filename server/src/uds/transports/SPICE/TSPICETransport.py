@@ -60,6 +60,7 @@ class TSPICETransport(BaseSpiceTransport):
     typeName = _('SPICE')
     typeType = 'TSSPICETransport'
     typeDescription = _('SPICE Protocol. Tunneled connection.')
+    needsJava = True  # If this transport needs java for rendering
     protocol = protocols.SPICE
     group = TUNNELED_GROUP
 
@@ -114,6 +115,6 @@ class TSPICETransport(BaseSpiceTransport):
         }.get(os.OS)
 
         if os is None:
-            return super(self.__class__, self).getUDSTransportScript(userService, transport, ip, os, user, password, request)
+            return super(TSPICETransport, self).getUDSTransportScript(self, userService, transport, ip, os, user, password, request)
 
         return self.getScript('scripts/{}/tunnel.py'.format(os)).format(m=m)

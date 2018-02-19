@@ -14,16 +14,16 @@ import six
 
 def execNewXFreeRdp(parent, xfreerdp, port):
     import subprocess  # @Reimport
-    params = [xfreerdp] + sp['as_new_xfreerdp_params'] + ['/v:127.0.0.1:{}'.format(port)]  # @UndefinedVariable
+    params = [xfreerdp] + {m.r.as_new_xfreerdp_params} + ['/v:127.0.0.1:{{}}'.format(port)]  # @UndefinedVariable
     tools.addTaskToWait(subprocess.Popen(params))
 
 
 def execRdesktop(parent, rdesktop, port):
     import subprocess  # @Reimport
-    params = [rdesktop] + sp['as_rdesktop_params'] + ['127.0.0.1:{}'.format(port)]  # @UndefinedVariable
+    params = [rdesktop] + {m.r.as_rdesktop_params} + ['127.0.0.1:{{}}'.format(port)]  # @UndefinedVariable
     p = subprocess.Popen(params, stdin=subprocess.PIPE)
-    if sp['password'] != '':  # @UndefinedVariable
-        p.stdin.write(sp['password'])  # @UndefinedVariable
+    if {m.hasCredentials}:  # @UndefinedVariable
+        p.stdin.write('{m.password}')
     p.stdin.close()
     tools.addTaskToWait(p)
 
@@ -60,7 +60,7 @@ if app is None or fnc is None:
 ''')
 else:
     # Open tunnel
-    forwardThread, port = forward(sp['tunHost'], sp['tunPort'], sp['tunUser'], sp['tunPass'], sp['ip'], 3389, waitTime=sp['tunWait'])  # @UndefinedVariable
+    forwardThread, port = forward('{m.tunHost}', '{m.tunPort}', '{m.tunUser}', '{m.tunPass}', '{m.ip}', 3389, waitTime={m.tunWait})  # @UndefinedVariable
 
     if forwardThread.status == 2:
         raise Exception('Unable to open tunnel')

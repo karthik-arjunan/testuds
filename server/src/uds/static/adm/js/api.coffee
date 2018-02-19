@@ -16,7 +16,6 @@ api.permissions = {
 api.doLog = (args...) ->
   if api.debug
     try
-      args.push "API"
       console.log.apply window, args
   return
 
@@ -445,15 +444,6 @@ api.sPoolGroups = new BasicModelRest("gallery/servicespoolgroups")
 api.system = new BasicModelRest("system")
 api.reports = new BasicModelRest("reports") # Not fully used, but basic usage is common
 api.calendars = new BasicModelRest("calendars")
-
-api.accounts = new BasicModelRest("accounts")
-api.accounts.timemark = (id, success_fnc, fail_fnc) ->
-  @get
-    id: id + '/timemark'
-    success: success_fnc
-    fail: fail_fnc
-
-api.proxies = new BasicModelRest("proxies")
 
 # In fact, reports do not have any type
 api.reports.types = (success_fnc, fail_fnc) ->

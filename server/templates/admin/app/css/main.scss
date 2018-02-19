@@ -6,7 +6,7 @@ $icon-font-path: "../fonts/";
 
 // Own variables
 $sidebar-icon-width: 24px;
-$sidebar-icon-width-collapsed: 24px;
+$sidebar-icon-width-collapsed: 36px;
 
 $sidebar-size: 225px;  // 225 px
 $sidebar-size-collapsed: $sidebar-icon-width-collapsed + 2*$font-size-base; // 40px;
@@ -91,11 +91,6 @@ body {
 .navbar-img {
   width: 2em;
   margin-top: -8px;
-}
-
-.side-nav > .navbar-nav > li > a {
-  padding-bottom: $font-size-base/2;
-  padding-top: $font-size-base/2;
 }
 
 .cursor-pointer {
@@ -193,8 +188,7 @@ body {
   /* Side Nav */
   .side-nav {
     position: fixed;
-    top: 0px;
-    margin-top: $sidebar-top;
+    top: $sidebar-top;
     height: 100%;
     overflow-y: auto;
     border-radius: 0;
@@ -248,7 +242,7 @@ body {
 
           > li > a {
             color: inherit;
-            padding: $font-size-base/2 $font-size-base/2 $font-size-base/2 32px;
+            padding: $font-size-base;
 
             &:hover, &.active, &:focus {
               color: #fff;
@@ -415,9 +409,6 @@ span.tag {
         }
 }
 
-li.selected {
-    background-color: #5094CE;
-}
 
 /* theme */
 
