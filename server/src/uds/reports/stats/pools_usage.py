@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -39,13 +39,12 @@ from uds.core.reports.tools import UDSGeraldoReport, UDSImage
 from uds.core.util.stats import counters
 
 
-import StringIO
+import six
 import csv
 
 
 from .base import StatsReport
 
-from uds.core.util import tools
 from uds.models import ServicePool
 from geraldo.generators.pdf import PDFGenerator
 from geraldo import ReportBand, ObjectValue, Label, BAND_WIDTH, SubReport
@@ -119,7 +118,6 @@ class CountersPoolsReport(UDSGeraldoReport):
             ),
         )
     ]
-
 
 
 class CountersPoolAssigned(StatsReport):
@@ -250,8 +248,7 @@ class CountersPoolAssigned(StatsReport):
 
         img = PILImage.frombuffer("RGBA", (surface.get_width(), surface.get_height()), surface.get_data(), "raw", "BGRA", 0, 1)
 
-
-        output = StringIO.StringIO()
+        output = six.StringIO()
 
         # Regenerate data
 
@@ -278,7 +275,7 @@ class CountersPoolAssignedCSV(CountersPoolAssigned):
     pools = CountersPoolAssigned.pools
 
     def generate(self):
-        output = StringIO.StringIO()
+        output = six.StringIO()
         writer = csv.writer(output)
         writer.writerow([ugettext('Pool'), ugettext('Hour'), ugettext('Services')])
 

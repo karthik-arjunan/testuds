@@ -19,6 +19,12 @@ gui.providers.fastLink = (event, obj) ->
     setTimeout( ->
       $(".lnk-deployed_services").click();
     , 500);
+  else   if $obj.hasClass('goProxyGroupLink')
+    gui.lookupUuid = $obj.attr('href').substr(1)
+    setTimeout( ->
+      $(".lnk-proxies").click();
+    , 50
+    )
 
 gui.providers.link = (event) ->
   "use strict"
@@ -48,7 +54,6 @@ gui.providers.link = (event) ->
       providers: "providers-placeholder"
       provider_info: "provider-info-placeholder"
       services: "services-placeholder"
-      usage: "usage-placeholder"
       logs: "logs-placeholder"
     )
     gui.setLinksEvents()
@@ -208,6 +213,17 @@ gui.providers.link = (event) ->
           onLoad: (k) ->
             gui.tools.unblockUI()
             return
+          onData: (data) ->
+            $.each data, (index, value) ->
+              try
+                if value.proxy_id != '-1'
+                   value.proxy = gui.fastLink(value.proxy, value.proxy_id, 'gui.providers.fastLink', 'goProxyGroupLink')
+              catch e
+                value.name = "<span class=\"fa fa-asterisk text-alert\"></span> " + value.name
+              return
+
+            return
+
         )
         logTable = gui.providers.logTable(id,
           container: "logs-placeholder"

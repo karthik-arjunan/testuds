@@ -25,14 +25,14 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
-__updated__ = '2015-02-28'
+__updated__ = '2016-08-26'
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.shortcuts import redirect
 from django.template import RequestContext
 
@@ -49,10 +49,10 @@ logger = logging.getLogger(__name__)
 
 @webLoginRequired(admin=False)
 def prefs(request):
-    '''
+    """
     Preferences form
     :param request:
-    '''
+    """
     # Redirects to index if no preferences change allowed
     if GlobalConfig.PREFERENCES_ALLOWED.getBool(True) is False:
         return redirect('uds.web.views.index')
@@ -60,4 +60,4 @@ def prefs(request):
         UserPrefsManager.manager().processRequestForUserPreferences(request.user, request.POST)
         return redirect('uds.web.views.index')
     prefs_form = UserPrefsManager().manager().getHtmlForUserPreferences(request.user)
-    return render_to_response(theme.template('prefs.html'), {'prefs_form': prefs_form}, context_instance=RequestContext(request))
+    return render(request, theme.template('prefs.html'), {'prefs_form': prefs_form})

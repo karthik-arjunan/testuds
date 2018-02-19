@@ -34,8 +34,8 @@ def onExit():
         [
             'security',
              'delete-generic-password',
-             '-a', '{m.usernameWithDomain}',
-             '-s', 'Remote Desktop Connection 2 Password for {m.ip}',
+             '-a', sp['usernameWithDomain'],  # @UndefinedVariable
+             '-s', 'Remote Desktop Connection 2 Password for {}'.format(sp['ip']),  # @UndefinedVariable
         ]
     )
 
@@ -45,23 +45,22 @@ if executable is None:
 <ul>
     <li>
         <p><b>CoRD</b> (A bit unstable from 10.7 onwards)</p>
-        <p>You can get it from <a href="{m.this_server}static/other/CoRD.pkg">this link</a></p>
+        <p>You can get it from <a href="{}static/other/CoRD.pkg">this link</a></p>
     </li>
 </ul>
-<p>If both apps are installed, Remote Desktop Connection will be used as first option</p>
-
-''')
+<p>If both apps are installed, Remote Desktop Connection will be used as first option</p>'''.format(sp['this_server']))  # @UndefinedVariable
 elif executable == msrdc:
     try:
-        if {m.hasCredentials}:  # @UndefinedVariable
+        filename = tools.saveTempFile(sp['as_file'])  # @UndefinedVariable
+        if sp['password'] != '':  # @UndefinedVariable
             subprocess.call(
                 [
                     'security',
                     'add-generic-password',
-                    '-w', '{m.password}',
+                    '-w', sp['password'],  # @UndefinedVariable
                     '-U',
-                    '-a', '{m.usernameWithDomain}',
-                    '-s', 'Remote Desktop Connection 2 Password for {m.ip}',
+                    '-a', sp['usernameWithDomain'],  # @UndefinedVariable
+                    '-s', 'Remote Desktop Connection 2 Password for {}'.format(sp['ip']),  # @UndefinedVariable
                     '-T', '/Applications/Remote Desktop Connection.app',
                 ]
             )
@@ -73,32 +72,6 @@ elif executable == msrdc:
     except Exception as e:
         raise
 else:  # CoRD
-    url = 'rdp://'
-
-    username, domain = '{m.username}', '{m.domain}'
-
-    if username != '':
-        url += urllib.quote(username)
-        if '{m.password}' != '':
-            url += ':' + urllib.quote('{m.password}')
-        url += '@'
-    url += '{m.ip}/'
-    if domain != '':
-        url += domain
-
-    url += '?screenDepth={m.r.bpp}'
-
-    if {m.r.fullScreen}:  # @UndefinedVariable
-        url += '&fullscreen###true'
-    else:
-        url += 'screenWidth###{m.r.width}&screenHeight###{m.r.height}'
-
-    url += '&forwardAudio###' + '01'[{m.r.redirectAudio}]  # @UndefinedVariable
-
-    if {m.r.redirectDrives}:  # @UndefinedVariable
-        url += '&forwardDisks###true'
-
-    if {m.r.redirectPrinters}:  # @UndefinedVariable
-        url += '&forwardPrinters###true'
+    url = sp['as_cord_url']  # @UndefinedVariable
 
     tools.addTaskToWait(subprocess.Popen(['open', url]))

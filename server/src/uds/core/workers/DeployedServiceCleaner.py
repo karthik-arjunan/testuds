@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.db import transaction
@@ -83,7 +83,7 @@ class DeployedServiceRemover(Job):
             u.cancel()
         # Nice start of removal, maybe we need to do some limitation later, but there should not be too much services nor publications cancelable at once
         ds.state = State.REMOVING
-        ds.name = ds.name + ' (removed)'
+        ds.name += ' (removed)'
         ds.save()
 
     def continueRemovalOf(self, ds):
@@ -144,7 +144,6 @@ class DeployedServiceRemover(Job):
                         ds.delete()
                     except Exception as e2:
                         logger.error('Could not delete {}'.format(e2))
-
 
         rems = DeployedService.objects.filter(state=State.REMOVING)[:10]
         if len(rems) > 0:

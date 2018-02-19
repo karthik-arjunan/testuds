@@ -35,6 +35,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from uds.core.util import encoders
 from Crypto.PublicKey import RSA
+from uds.core.util import encoders
 from OpenSSL import crypto
 from Crypto.Random import atfork
 import hashlib
@@ -94,11 +95,11 @@ class CryptoManager(object):
             s1 = s1.encode('utf-8')
         if isinstance(s2, six.text_type):
             s2 = s2.encode('utf-8')
-        mult = (len(s1) / len(s2)) + 1
-        s1 = array.array(six.binary_type('B'), s1)
-        s2 = array.array(six.binary_type('B'), s2 * mult)
+        mult = int(len(s1) / len(s2)) + 1
+        s1 = array.array('B', s1)
+        s2 = array.array('B', s2 * mult)
         # We must return bynary in xor, because result is in fact binary
-        return six.binary_type(array.array(six.binary_type('B'), (s1[i] ^ s2[i] for i in range(len(s1)))).tostring())
+        return array.array('B', (s1[i] ^ s2[i] for i in range(len(s1)))).tostring()
 
     def loadPrivateKey(self, rsaKey):
         try:
@@ -134,13 +135,13 @@ class CryptoManager(object):
         if obj is None:
             obj = six.text_type(datetime.datetime.now()) + six.text_type(self._counter)
             self._counter += 1
-
-        if isinstance(obj, six.text_type):
-            obj = obj.decode('utf-8')
         else:
+            obj = six.text_type(hash(obj))
+
+        if six.PY2:
             obj = six.binary_type(obj)
 
-        return six.text_type(uuid.uuid5(self._namespace, six.binary_type(obj))).lower()  # I believe uuid returns a lowercase uuid always, but in case... :)
+        return six.text_type(uuid.uuid5(self._namespace, obj)).lower()  # I believe uuid returns a lowercase uuid always, but in case... :)
 
     def randomString(self, length=40):
         return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(length))

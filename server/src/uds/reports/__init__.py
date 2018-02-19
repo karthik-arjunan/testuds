@@ -27,7 +27,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 Transport modules for UDS are contained inside this package.
 To create a new rwpoer module, you will need to follow this steps:
     1.- Create the report module inside one of the existing (or new one) packages
@@ -38,22 +38,25 @@ To create a new rwpoer module, you will need to follow this steps:
 The registration of modules is done locating subclases of :py:class:`uds.core.auths.Authentication`
 
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
+
+import six
 import logging
 
 logger = logging.getLogger(__name__)
 
-__updated__ = '2017-05-03'
+__updated__ = '2017-05-10'
 
 
 availableReports = []
 
 
+# noinspection PyTypeChecker
 def __init__():
-    '''
+    """
     This imports all packages that are descendant of this package, and, after that,
-    '''
+    """
     import os.path
     import pkgutil
     import sys
@@ -64,16 +67,20 @@ def __init__():
         availableReports.append(cls)
 
     def recursiveAdd(p):
-        if p.generate != reports.Report.generate:
+        if p.uuid is not None:
             addReportCls(p)
+        else:
+            logger.debug('Report class {} not added because it lacks of uuid (it is probably a base class)'.format(p))
 
         for c in p.__subclasses__():
             recursiveAdd(c)
 
     # Dinamycally import children of this package. The __init__.py files must import classes
     pkgpath = os.path.dirname(sys.modules[__name__].__file__)
-    for _, name, _ in pkgutil.iter_modules([pkgpath]):
-        __import__(name, globals(), locals(), [])
+    # TODO: Make this work with python3 also!!! (look for alternative, we have time...)
+    if six.PY2:
+        for _, name, _ in pkgutil.iter_modules([pkgpath]):
+            __import__(name, globals(), locals(), [], 1)
 
     recursiveAdd(reports.Report)
 

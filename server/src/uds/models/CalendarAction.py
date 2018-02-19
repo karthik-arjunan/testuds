@@ -28,13 +28,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 
 from __future__ import unicode_literals
-
-__updated__ = '2017-03-10'
 
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -55,14 +53,17 @@ logger = logging.getLogger(__name__)
 # Current posible actions
 # Each line describes:
 #
-CALENDAR_ACTION_PUBLISH = { 'id' : 'PUBLISH', 'description': _('Publish'), 'params': () }
-CALENDAR_ACTION_CACHE_L1 = { 'id': 'CACHEL1', 'description': _('Set cache size'), 'params': ({'type': 'numeric', 'name': 'size', 'description': _('Cache size'), 'default': '1' },) }
-CALENDAR_ACTION_CACHE_L2 = { 'id': 'CACHEL2', 'description': _('Set L2 cache size'), 'params': ({'type': 'numeric', 'name': 'size', 'description': _('Cache L2 size'), 'default': '1' },) }
-CALENDAR_ACTION_INITIAL = { 'id': 'INITIAL', 'description': _('Set initial services'), 'params': ({'type': 'numeric', 'name': 'size', 'description': _('Initial services'), 'default': '1' },) }
-CALENDAR_ACTION_MAX = { 'id': 'MAX', 'description': _('Set maximum number of services'), 'params': ({'type': 'numeric', 'name': 'size', 'description': _('Maximum services'), 'default': '10' },) }
+CALENDAR_ACTION_PUBLISH = {'id' : 'PUBLISH', 'description': _('Publish'), 'params': ()}
+CALENDAR_ACTION_CACHE_L1 = {'id': 'CACHEL1', 'description': _('Set cache size'), 'params': ({'type': 'numeric', 'name': 'size', 'description': _('Cache size'), 'default': '1'},) }
+CALENDAR_ACTION_CACHE_L2 = {'id': 'CACHEL2', 'description': _('Set L2 cache size'), 'params': ({'type': 'numeric', 'name': 'size', 'description': _('Cache L2 size'), 'default': '1'},)}
+CALENDAR_ACTION_INITIAL = {'id': 'INITIAL', 'description': _('Set initial services'), 'params': ({'type': 'numeric', 'name': 'size', 'description': _('Initial services'), 'default': '1'},)}
+CALENDAR_ACTION_MAX = {'id': 'MAX', 'description': _('Set maximum number of services'), 'params': ({'type': 'numeric', 'name': 'size', 'description': _('Maximum services'), 'default': '10'},)}
 
-CALENDAR_ACTION_DICT = dict(list((c['id'], c) for c in (CALENDAR_ACTION_PUBLISH, CALENDAR_ACTION_CACHE_L1,
-                                                        CALENDAR_ACTION_CACHE_L2, CALENDAR_ACTION_INITIAL, CALENDAR_ACTION_MAX)))
+CALENDAR_ACTION_DICT = dict(list((c['id'], c) for c in (
+    CALENDAR_ACTION_PUBLISH, CALENDAR_ACTION_CACHE_L1,
+    CALENDAR_ACTION_CACHE_L2, CALENDAR_ACTION_INITIAL, CALENDAR_ACTION_MAX
+)))
+
 
 @python_2_unicode_compatible
 class CalendarAction(UUIDModel):
@@ -77,9 +78,9 @@ class CalendarAction(UUIDModel):
     next_execution = models.DateTimeField(default=None, db_index=True, null=True, blank=True)
 
     class Meta:
-        '''
+        """
         Meta class to declare db table
-        '''
+        """
         db_table = 'uds_cal_action'
         app_label = 'uds'
 
@@ -113,12 +114,10 @@ class CalendarAction(UUIDModel):
         if saveServicePool:
             self.service_pool.save()
 
-
     def save(self, *args, **kwargs):
         self.next_execution = calendar.CalendarChecker(self.calendar).nextEvent(checkFrom=self.last_execution, startEvent=self.at_start, offset=self.offset)
 
         return UUIDModel.save(self, *args, **kwargs)
-
 
     def __str__(self):
         return 'Calendar of {}, last_execution = {}, next execution = {}, action = {}, params = {}'.format(

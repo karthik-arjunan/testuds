@@ -164,7 +164,6 @@ class CommonService(object):
         # Now try to run the "runonce" element
         runOnce = store.runApplication()
         if runOnce is not None:
-            logger.info('Executing runOnce app: {}'.format(runOnce))
             if self.execute(runOnce, 'RunOnce') is True:
                 # operations.reboot()
                 return False
@@ -265,16 +264,24 @@ class CommonService(object):
             if len(res) >= 3:
                 self.api.maxSession = int(res[2])  # Third parameter is max session duration
                 msg = ipc.REQ_INFORMATION  # Senf information, requested or not, to client on login notification
-        if msg == ipc.REQ_LOGOUT:
+        elif msg == ipc.REQ_LOGOUT:
             self.api.logout(data)
             self.onLogout(data)
-        if msg == ipc.REQ_INFORMATION:
+        elif msg == ipc.REQ_INFORMATION:
             info = {}
             if self.api.idle is not None:
                 info['idle'] = self.api.idle
             if self.api.maxSession is not None:
                 info['maxSession'] = self.api.maxSession
             self.ipc.sendInformationMessage(info)
+        elif msg == ipc.REQ_TICKET:
+            d = json.loads('data')
+            try:
+                result = self.api.getTicket(d['ticketId'], d['secure'])
+                self.ipc.sendTicketMessage(result)
+            except Exception:
+                logger.exception('Getting ticket')
+                self.ipc.sendTicketMessage({'error': 'invalid ticket'})
 
     def initIPC(self):
         # ******************************************
@@ -334,6 +341,9 @@ class CommonService(object):
     # ****************************************
     # Methods that CAN BE overriden by actors
     # ****************************************
+    def notifyLocal(self):
+        self.setReady(operations.getComputerName())
+
     def doWait(self, miliseconds):
         '''
         Invoked to wait a bit

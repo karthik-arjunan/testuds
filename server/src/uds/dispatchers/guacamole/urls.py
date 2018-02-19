@@ -27,13 +27,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
-from django.conf.urls import patterns
+from django.conf.urls import url
+from .views import guacamole
 
-urlpatterns = patterns(__package__,
-    (r'^guacamole/(?P<tunnelId>.+)$', 'views.guacamole'),
-    )
+urlpatterns = [
+    url(r'^guacamole/(?P<tunnelId>.+)$', guacamole, name='dispatcher.guacamole'),
+]

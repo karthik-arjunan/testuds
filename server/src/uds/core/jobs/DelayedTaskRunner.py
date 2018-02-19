@@ -45,7 +45,6 @@ import threading
 import time
 import logging
 
-__updated__ = '2017-11-15'
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +53,6 @@ class DelayedTaskThread(threading.Thread):
     '''
     Class responsible of executing a delayed task in its own thread
     '''
-
     def __init__(self, taskInstance):
         super(DelayedTaskThread, self).__init__()
         self._taskInstance = taskInstance
@@ -139,7 +137,7 @@ class DelayedTaskRunner(object):
             try:
                 self.__insert(instance, delay, tag)
                 break
-            except Exception, e:
+            except Exception as e:
                 logger.info('Exception inserting a delayed task {0}: {1}'.format(str(e.__class__), e))
                 try:
                     connection.close()

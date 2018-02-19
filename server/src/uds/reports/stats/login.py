@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 .. moduleauthor:: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -39,7 +39,6 @@ from uds.core.ui.UserInterface import gui
 from uds.core.reports.tools import UDSImage, UDSGeraldoReport
 from uds.core.util.stats import events
 
-import StringIO
 import csv
 
 import cairo
@@ -56,6 +55,7 @@ from reportlab.lib.enums import TA_RIGHT, TA_CENTER
 from PIL import Image as PILImage
 
 import datetime
+import six
 import logging
 
 logger = logging.getLogger(__name__)
@@ -200,7 +200,7 @@ class StatsReportLogin(StatsReport):
                 }
             )
 
-        return (xLabelFormat, data, reportData)
+        return xLabelFormat, data, reportData
 
     def getWeekHourlyData(self):
         start = self.startDate.stamp()
@@ -213,7 +213,7 @@ class StatsReportLogin(StatsReport):
             dataWeek[s.weekday()] += 1
             dataHour[s.hour] += 1
 
-        return (dataWeek, dataHour)
+        return dataWeek, dataHour
 
     def generate(self):
         # Sample query:
@@ -340,7 +340,7 @@ class StatsReportLogin(StatsReport):
 
         img3 = PILImage.frombuffer("RGBA", (surface.get_width(), surface.get_height()), surface.get_data(), "raw", "BGRA", 0, 1)
 
-        output = StringIO.StringIO()
+        output = six.StringIO()
 
         queryset = [
             {'image': img, 'image2': img2, 'image3': img3, 'data': reportData}

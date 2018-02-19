@@ -27,19 +27,20 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
 from uds.models import Authenticator
 from uds.core import auths
 
-from users_groups import Users, Groups
 from uds.REST import NotFound
 from uds.REST.model import ModelHandler
 from uds.core.util import permissions
+
+from .users_groups import Users, Groups
 
 import logging
 

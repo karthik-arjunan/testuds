@@ -27,15 +27,16 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django import forms
 from django.utils.translation import ugettext as _, ugettext_lazy
 from uds.core.ui.UserInterface import gui
 import logging
+import six
 
 logger = logging.getLogger(__name__)
 
@@ -56,15 +57,15 @@ class UserPrefsManager(object):
         return module + "_" + name
 
     def registerPrefs(self, modName, friendlyModName, prefs):
-        '''
+        """
         Register an array of preferences for a module
-        '''
+        """
         self._prefs[modName] = {'friendlyName': friendlyModName, 'prefs': prefs}
 
     def getPreferencesForUser(self, modName, user):
-        '''
+        """
         Gets the preferences for an specified module for the user
-        '''
+        """
         logger.debug('Self prefs: {}'.format(self._prefs))
         prefs = {}
         for up in user.preferences.filter(module=modName):
@@ -87,7 +88,7 @@ class UserPrefsManager(object):
         for up in user.preferences.all().order_by('module'):
             data[self.__nameFor(up.module, up.name)] = up.value
         res = ''
-        for mod, v in sorted(self._prefs.iteritems()):
+        for mod, v in sorted(six.iteritems(self._prefs)):
             form = forms.Form()
             for p in v['prefs']:
                 name = self.__nameFor(mod, p.getName())
@@ -102,7 +103,7 @@ class UserPrefsManager(object):
             for up in user.preferences.all():
                 data[self.__nameFor(up.module, up.name)] = up.value
         res = []
-        for mod, v in self._prefs.iteritems():
+        for mod, v in six.iteritems(self._prefs):
             grp = []
             for p in v['prefs']:
                 name = self.__nameFor(mod, p.getName())
@@ -112,13 +113,13 @@ class UserPrefsManager(object):
         return res
 
     def processRequestForUserPreferences(self, user, data):
-        '''
+        """
         Returns a list of errors in case of error, else return None
-        '''
+        """
         # First, read fields form every single "section"
         logger.debug('Processing {0}'.format(self._prefs))
         prefs = []
-        for mod, v in self._prefs.iteritems():
+        for mod, v in six.iteritems(self._prefs):
             logger.debug(mod)
             form = forms.Form(data)
             for p in v['prefs']:
@@ -140,11 +141,11 @@ class UserPrefsManager(object):
         return None
 
     def processGuiForUserPreferences(self, user, data):
-        '''
-        '''
+        """
+        """
         logger.debug('Processing data {0}'.format(data))
         prefs = []
-        for mod, v in self._prefs.iteritems():
+        for mod, v in six.iteritems(self._prefs):
             logger.debug(mod)
             for p in v['prefs']:
                 name = self.__nameFor(mod, p.getName())
@@ -171,14 +172,14 @@ class UserPreference(object):
         return self._defValue
 
     def formField(self, value):
-        '''
+        """
         Returns a form field to add to the preferences form
-        '''
+        """
         raise NotImplementedError('Can\'t create an abstract preference!!!')
 
-    def guiField(self):
-        '''
-        '''
+    def guiField(self, value):
+        """
+        """
         raise NotImplementedError('Can\'t create an abstract preference!!!')
 
 
@@ -259,9 +260,9 @@ class CommonPrefs(object):
 
     @staticmethod
     def getWidthHeight(prefsDict):
-        '''
+        """
         Get width based on screenSizePref value
-        '''
+        """
         try:
             return {
                 CommonPrefs.SZ_640x480: (640, 480),
@@ -276,9 +277,9 @@ class CommonPrefs(object):
 
     @staticmethod
     def getDepth(prefsDict):
-        '''
+        """
         Get depth based on depthPref value
-        '''
+        """
         try:
             return {
                 CommonPrefs.DEPTH_8: 8,

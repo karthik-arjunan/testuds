@@ -28,12 +28,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-'''
+"""
 
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
-from Authenticator import SimpleLDAPAuthenticator
-
-__updated__ = '2014-02-19'
+from .Authenticator import SimpleLDAPAuthenticator

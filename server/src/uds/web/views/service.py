@@ -32,15 +32,13 @@ from __future__ import unicode_literals
 
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from uds.core.util import log
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page, never_cache
 
 from uds.core.auths.auth import webLoginRequired, webPassword
 from uds.core.managers import userServiceManager, cryptoManager
-from uds.models import TicketStore, UserService
+from uds.models import TicketStore
 from uds.core.ui.images import DEFAULT_IMAGE
 from uds.core.ui import theme
 from uds.core.util.model import processUuid
@@ -56,8 +54,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-__updated__ = '2017-11-16'
-
 
 @webLoginRequired(admin=False)
 def transportOwnLink(request, idService, idTransport):
@@ -67,13 +63,12 @@ def transportOwnLink(request, idService, idTransport):
         # This returns a response object in fact
         return itrans.getLink(userService, trans, ip, request.os, request.user, webPassword(request), request)
     except ServiceNotReadyError as e:
-        return render_to_response(
+        return render(request,
             theme.template('service_not_ready.html'),
             {
                 'fromLauncher': False,
                 'code': e.code
-            },
-            context_instance=RequestContext(request)
+            }
         )
     except Exception as e:
         logger.exception("Exception")
@@ -152,7 +147,6 @@ def clientEnabler(request, idService, idTransport):
         }),
         content_type='application/json'
     )
-
 
 @webLoginRequired(admin=False)
 @never_cache

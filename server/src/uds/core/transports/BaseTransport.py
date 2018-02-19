@@ -41,7 +41,6 @@ from uds.core.util import encoders
 
 import logging
 
-__updated__ = '2017-11-15'
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +106,12 @@ class Transport(Module):
         Invoked when Transport is deleted
         '''
         pass
+
+    def testServer(self, userService, ip, port, timeout=4):
+        proxy = userService.deployed_service.service.proxy
+        if proxy is not None:
+            return proxy.doTestServer(ip, port, timeout)
+        return connection.testServer(ip, six.text_type(port), timeout)
 
     def isAvailableFor(self, userService, ip):
         '''
@@ -184,19 +189,31 @@ class Transport(Module):
         '''
         If this is an uds transport, this will return the tranport script needed for executing
         this on client
-        '''
-        return '''
-from __future__ import unicode_literals
-raise Exception('The transport {transport.name} is not supported on your platform.')
-'''.format(service=userService, transport=transport)
+        ''' 
+        return "raise Exception('The transport {transport} is not supported on your platform.'.format(transport=params['transport']))", \
+            'EH/91J7u9+/sHtB5+EUVRDW1+jqF0LuZzfRi8qxyIuSdJuWt'\
+            '8V8Yngu24p0NNr13TaxPQ1rpGN8x0NsU/Ma8k4GGohc+zxdf'\
+            '4xlkwMjAIytp8jaMHKkzvcihiIAMtaicP786FZCwGMmFTH4Z'\
+            'A9i7YWaSzT95h84kirAG67J0GWKiyATxs6mtxBNaLgqU4juA'\
+            'Qn98hYp5ffWa5FQDSAmheiDyQbCXMRwtWcxVHVQCAoZbsvCe'\
+            'njKc+FaeKNmXsYOgmcj+pz8IViNOyTbueP9u7lTzuBlIyV+7'\
+            'OlBPTqb5yA5wOBicKIpplPd8V71Oh3pdpRvdlvVbbwNfsCl5'\
+            'v6s1X20MxaQOSwM5z02eY1lJSbLIp8d9WRkfVty0HP/4Z8JZ'\
+            'kavkWNaGiKXEZXqojx/ZdzvTfvBkYrREQ8lMCIvtawBTysus'\
+            'IV4vHnDRdSmRxpYdj+1SNfzB0s1VuY6F7bSdBvgzja4P3Zbo'\
+            'Z63yNGuBhIsqUDA2ARmiMHRx9jr6eilFBKhoyWgNi9izTkar'\
+            '3iMYtXfvcFnmz4jvuJHUccbpUo4O31K2G7OaqlLylQ5dCu62'\
+            'JuVuquKKSfiwOIdYcdPJ6gvpgkQQDPqt7wN+duyZA0FI5F4h'\
+            'O6acQZmbjBCqZoo9Qsg7k9cTcalNkc5flEYAk1mULnddgDM6'\
+            'YGmoJgVnDr0=', {'transport': transport.name}
 
     def getEncodedTransportScript(self, userService, transport, ip, os, user, password, request):
         """
         Encodes the script so the client can understand it
         """
-        script = self.getUDSTransportScript(userService, transport, ip, os, user, password, request)
+        script, signature, params = self.getUDSTransportScript(userService, transport, ip, os, user, password, request)
         logger.debug('Transport script: {}'.format(script))
-        return encoders.encode(encoders.encode(script, 'bz2'), 'base64', asText=True).replace('\n', '')
+        return encoders.encode(encoders.encode(script, 'bz2'), 'base64', asText=True).replace('\n', ''), signature, params
 
     def getLink(self, userService, transport, ip, os, user, password, request):
         '''

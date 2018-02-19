@@ -26,15 +26,16 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
 from django.conf import settings
 from django.apps import apps
 import uds.models.Config
 from uds.core.managers.CryptoManager import CryptoManager
+import six
 import logging
 
 logger = logging.getLogger(__name__)
@@ -50,10 +51,11 @@ getLater = []
 # For custom params (for choices mainly)
 configParams = {}
 
+
 class Config(object):
-    '''
+    """
     Keeps persistence configuration data
-    '''
+    """
 
     # Fields types, so inputs get more "beautiful"
     TEXT_FIELD = 0
@@ -215,9 +217,9 @@ class Config(object):
 
 
 class GlobalConfig(object):
-    '''
+    """
     Simple helper to keep track of global configuration
-    '''
+    """
     SESSION_EXPIRE_TIME = Config.section(GLOBAL_SECTION).value('sessionExpireTime', '24', type=Config.NUMERIC_FIELD)  # Max session duration (in use) after a new publishment has been made
     # Delay between cache checks. reducing this number will increase cache generation speed but also will load service providers
     CACHE_CHECK_DELAY = Config.section(GLOBAL_SECTION).value('cacheCheckDelay', '19', type=Config.NUMERIC_FIELD)
@@ -339,14 +341,13 @@ class GlobalConfig(object):
 
         GlobalConfig.UDS_THEME.setParams(themes)
 
-
     @staticmethod
     def initialize():
         if GlobalConfig.initDone is False:
             try:
                 # Tries to initialize database data for global config so it is stored asap and get cached for use
                 GlobalConfig.initDone = True
-                for v in GlobalConfig.__dict__.itervalues():
+                for v in six.itervalues(GlobalConfig.__dict__):
                     if type(v) is Config._Value:
                         v.get()
 

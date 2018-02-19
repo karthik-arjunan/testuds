@@ -32,30 +32,32 @@
 '''
 from __future__ import unicode_literals
 
+from __future__ import unicode_literals
+
+import datetime
+import logging
+
+import six
 from django.utils.translation import ugettext as _
 
+from uds.REST import Handler
+from uds.REST import RequestError
+from uds.core.managers import cryptoManager
+from uds.core.osmanagers import OSManager
 from uds.core.util import Config
 from uds.core.util.State import State
 from uds.core.util.model import processUuid
-from uds.core.util import log
-from uds.core.managers import cryptoManager
-from uds.core.osmanagers import OSManager
 from uds.models import TicketStore
-from uds.REST import Handler
-from uds.REST import RequestError
 from uds.models import UserService
 
-import datetime
-import six
-
-import logging
-
 logger = logging.getLogger(__name__)
+
 
 # Actor key, configurable in Security Section of administration interface
 actorKey = Config.Config.section(Config.SECURITY_SECTION).value('Master Key',
                                                                 cryptoManager().uuid(datetime.datetime.now()).replace('-', ''),
                                                                 type=Config.Config.TEXT_FIELD)
+
 actorKey.get()
 
 # Error codes:
@@ -63,6 +65,10 @@ ERR_INVALID_KEY = 1
 ERR_HOST_NOT_MANAGED = 2
 ERR_USER_SERVICE_NOT_FOUND = 3
 ERR_OSMANAGER_ERROR = 4
+
+# Constants for tickets
+OWNER = 'ACTOR'
+SECURE_OWNER = 'SACTOR'
 
 
 # Enclosed methods under /actor path
@@ -121,11 +127,13 @@ class Actor(Handler):
         return services[0]
 
     def getTicket(self):
-        '''
+        """
         Processes get requests in order to obtain a ticket content
-        GET /rest/actor/ticket/[ticketId]
-        '''
+        GET /rest/actor/ticket/[ticketId]?key=masterKey&[secure=true|1|false|0]
+        """
         logger.debug("Ticket args for GET: {0}".format(self._args))
+
+        secure = self._params.get('secure') in ('1', 'true')
 
         if len(self._args) != 2:
             raise RequestError('Invalid request')
@@ -166,6 +174,7 @@ class Actor(Handler):
             actorVersion = self._params.get('version', 'unknown')
             service = self.getUserServiceByIds()
             if service is None:
+                logger.info('Unmanaged host request: {}'.format(self._args))
                 return Actor.result(_('Unmanaged host'), error=ERR_HOST_NOT_MANAGED)
             else:
                 # Set last seen actor version
@@ -204,6 +213,10 @@ class Actor(Handler):
             logger.debug('Setting comms url to {}'.format(data))
             service.setCommsUrl(data)
             return Actor.result('ok')
+        elif message == 'ssoAvailable':
+            logger.debug('Setting that SSO is available')
+            service.setProperty('sso_available', 1)
+            return Actor.result('ok')
         elif message == 'version':
             version = self._params.get('version', 'unknown')
             logger.debug('Got notified version {}'.format(version))
@@ -231,6 +244,7 @@ class Actor(Handler):
             else:
                 res = osmanager.process(service, message, data, options={'scramble': False})
         except Exception as e:
+            logger.exception("Exception processing from OS Manager")
             return Actor.result(six.text_type(e), ERR_OSMANAGER_ERROR)
 
         return Actor.result(res)

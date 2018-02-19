@@ -40,7 +40,11 @@ class XUACompatibleMiddleware(object):
     This header tells to Internet Explorer to render page with latest
     possible version or to use chrome frame if it is installed.
     """
-    def process_response(self, request, response):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
         if response.get('content-type', '').startswith('text/html'):
             response['X-UA-Compatible'] = 'IE=edge'
         return response
@@ -52,7 +56,10 @@ class RedirectMiddleware(object):
         'guacamole',
     ]
 
-    def process_request(self, request):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
         full_path = request.get_full_path()
         redirect = True
         for nr in RedirectMiddleware.NO_REDIRECT:
@@ -68,6 +75,7 @@ class RedirectMiddleware(object):
             url = url.replace('http://', 'https://')
 
             return HttpResponseRedirect(url)
+        return self.get_response(request)
 
     @staticmethod
     def registerException(path):

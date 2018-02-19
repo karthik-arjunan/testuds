@@ -5,20 +5,20 @@
 # All rights reserved.
 #
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 from __future__ import unicode_literals
 
+import six
 from django.utils.translation import ugettext_noop as _
 from uds.core.ui.UserInterface import gui
 from uds.core.managers.CryptoManager import CryptoManager
 from uds.core import osmanagers
-from WindowsOsManager import WindowsOsManager
 from uds.core.util import log
 import dns.resolver
 import ldap
-import six
+from .WindowsOsManager import WindowsOsManager
 
 import logging
 
@@ -93,12 +93,12 @@ class WinDomainOsManager(WindowsOsManager):
             yield (six.text_type(server.target)[:-1], server.port)
 
     def __connectLdap(self, servers=None):
-        '''
+        """
         Tries to connect to LDAP
         Raises an exception if not found:
             dns.resolver.NXDOMAIN
             ldap.LDAPError
-        '''
+        """
         if servers is None:
             servers = self.__getServerList()
 
@@ -194,9 +194,9 @@ class WinDomainOsManager(WindowsOsManager):
             logger.error(error)
 
     def release(self, service):
-        '''
+        """
         service is a db user service object
-        '''
+        """
         super(WinDomainOsManager, self).release(service)
 
         if not '.' in self._domain:
@@ -248,12 +248,12 @@ class WinDomainOsManager(WindowsOsManager):
             if self.__getGroup(l) is None:
                 return _('Check Error: group "{}" not found (using "cn" to locate it)').format(self._group)
 
-
         return _('Server check was successful')
 
     @staticmethod
     def test(env, data):
         logger.debug('Test invoked')
+        wd = None
         try:
             wd = WinDomainOsManager(env, data)
             logger.debug(wd)
@@ -272,9 +272,9 @@ class WinDomainOsManager(WindowsOsManager):
 
         except ldap.LDAPError:
             if wd._ou == '':
-                return [False, _('The default path {0} for computers was not found!!!').format(ou)]
+                return [False, _('The default path {0} for computers was not found!!!').format(wd._ou)]
             else:
-                return [False, _('The ou path {0} was not found!!!').format(ou)]
+                return [False, _('The ou path {0} was not found!!!').format(wd._ou)]
         except dns.resolver.NXDOMAIN:
             return [True, _('Could not check parameters (_ldap._tcp.{0} can\'r be resolved)').format(wd._domain)]
         except Exception as e:

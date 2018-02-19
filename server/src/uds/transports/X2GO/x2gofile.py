@@ -27,9 +27,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''
+"""
 @author: Adolfo Gómez, dkmaster at dkmon dot com
-'''
+"""
 
 template = '''[General]
 UDS=@ByteArray()
@@ -95,7 +95,7 @@ sshproxykrblogin=false
 '''
 
 def getTemplate(speed, pack, quality, sound, soundSystem, windowManager, exports, width, height, user):
-    trueFalse = lambda(x): 'true' if x else 'false'
+    trueFalse = lambda x: 'true' if x else 'false'
     export = 'export="{export}"' if exports else ''
     if width == -1 or height == -1:
         width = 800
