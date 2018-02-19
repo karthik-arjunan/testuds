@@ -17,6 +17,8 @@ sudo apt-get install -y nodejs
 sudo npm install coffee-script -g
 mkdir src/log
 cd src/
+pip install --upgrade pip
+pip install -r requirements.txt
 python manage.py createcachetable
 python manage.py makemigartions 
 python manage.py migrate
