@@ -1,7 +1,10 @@
+adium-theme-ubuntu==0.3.4
 asn1crypto==0.23.0
 bcrypt==3.1.4
 bitarray==0.8.1
+certifi==2018.1.18
 cffi==1.11.2
+chardet==3.0.4
 cryptography==2.1.4
 defusedxml==0.4.1
 Django==1.9.9
@@ -10,6 +13,7 @@ django-compressor==2.2
 dnspython==1.15.0
 enum34==1.1.6
 Geraldo==0.4.17
+get==0.0.39
 idna==2.6
 ipaddress==1.0.18
 lxml==4.1.1
@@ -17,6 +21,9 @@ MySQL-python==1.2.5
 olefile==0.44
 ovirt-engine-sdk-python==3.6.8.0
 paramiko==2.4.0
+Pillow==5.0.0
+post==0.0.26
+public==0.0.65
 pyasn1==0.4.2
 pycha==0.7.0
 pycparser==2.18
@@ -30,10 +37,15 @@ python-dateutil==2.6.1
 python-ldap==2.5.2
 python-memcached==1.58
 pytz==2017.3
+query-string==0.0.28
 rcssmin==1.0.6
 reportlab==3.4.0
+request==0.0.26
+requests==2.18.4
 rjsmin==1.0.12
 six==1.11.0
 ujson==1.35
+unity-lens-photos==1.0
+urllib3==1.22
 XenAPI==1.2
 xml-marshaller==0.9.7
