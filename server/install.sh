@@ -1,6 +1,6 @@
 sudo apt-get install python-pip
 sudo pip install --upgrade setuptools
-sudo apt-get install -y libffi-dev libssl-dev
+sudo apt-get install -y libffi-dev libssl-dev libgnutls28-dev
 sudo apt-get install -y libmysqlclient-dev
 sudo apt-get install -y libcurl4-gnutls-dev
 sudo apt-get install -y libpq-dev python-dev libxml2-dev libxslt1-dev libldap2-dev libsasl2-dev libffi-dev
@@ -16,9 +16,9 @@ curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo npm install coffee-script -g
 mkdir src/log
-cd src/
 pip install --upgrade pip
 pip install -r requirements.txt
+cd src/
 python manage.py createcachetable
 python manage.py makemigartions 
 python manage.py migrate
