@@ -16,7 +16,7 @@ Geraldo==0.4.17
 get==0.0.39
 idna==2.6
 ipaddress==1.0.18
-lxml==4.1.1
+lxml==4.9.1
 MySQL-python==1.2.5
 olefile==0.44
 ovirt-engine-sdk-python==3.6.8.0
